@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
+from django.forms.utils import ErrorDict, ErrorList
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
@@ -11,7 +12,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, FormView
 
-from accounts.forms import LoginForm, RegisterForm, MyLoginForm, UserRegistrationForm
+from accounts.forms import LoginForm, MyLoginForm, UserRegistrationForm
 
 
 # def user_login(request):
@@ -55,25 +56,6 @@ class MyRegisterFormView(FormView):
     def form_invalid(self, form):
         return super(MyRegisterFormView, self).form_invalid(form)
 
-#регистрация
-class MySignupView(CreateView):
-   model = User
-
-   #form_class = UserCreationForm
-   form_class = RegisterForm
-   success_url = reverse_lazy('login')
-   template_name = 'accounts/register.html'
-
-   def form_valid(self, form):
-       form_valid = super().form_valid(form)
-       username = form.cleaned_data["username"]
-       first_name = form.cleaned_data["first_name"]
-       last_name = form.cleaned_data["last_name"]
-       password = form.cleaned_data["password"]
-       auth_user = authenticate(username=username, first_name=first_name, last_name=last_name, password=password)
-       login(self.request, auth_user)
-       return form_valid
-
 
 #вход
 # class MyLoginView(LoginView):
@@ -107,7 +89,7 @@ def register(request):
         user_form = UserRegistrationForm(request.POST)
         if user_form.is_valid():
             # Create a new user object but avoid saving it yet
-            new_user = user_form.save(commit=False)
+            new_user = user_form.save()
             # Set the chosen password
             new_user.set_password(user_form.cleaned_data['password'])
             # Save the User object
@@ -115,4 +97,5 @@ def register(request):
             return render(request, 'accounts/register_done.html', {'new_user': new_user})
     else:
         user_form = UserRegistrationForm()
+
     return render(request, 'accounts/register.html', {'user_form': user_form})

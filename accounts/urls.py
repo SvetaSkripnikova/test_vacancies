@@ -6,7 +6,7 @@ from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView,
 from django.urls import path
 
 from accounts import views
-from accounts.views import MySignupView, MyRegisterFormView, LogoutSuccessView
+from accounts.views import LogoutSuccessView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),

@@ -41,6 +41,18 @@
             <label for="email"></label>
           </div>
 
+          <div class=" form-label-group">
+            <p class="text-muted">Телефон</p>
+            <input type="tel" id="phone" class="form-control" name="phone" required  placeholder="ХХХХХХХХХХ">
+            <label for="phone"></label>
+          </div>
+
+          <div class=" form-label-group">
+            <p class="text-muted">Дата рождения</p>
+            <input type="date" id="birth_date" class="form-control" name="birth_date" required >
+            <label for="birth_date"></label>
+          </div>
+
           <div class="form-label-group">
             <p class="text-muted">Пароль</p>
             <input type="password" id="password" class="form-control" name="password" required>
@@ -57,7 +69,7 @@
           <button class="btn btn-primary btn-lg btn-block" type="submit">Зарегистрироваться</button>
         </form>
 
-         <div class="mt-4 text-center"><p>Есть аккаунт? <a href="/login">Войдите!</a></p></div>
+         <div class="mt-4 text-center"><p>Есть аккаунт? <a href="{% url 'login' %}">Войдите!</a></p></div>
 
 
 
