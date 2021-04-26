@@ -28,6 +28,7 @@ SECRET_KEY = 'ip=m&7_ll)7d7#cdbr=!x7lsw1-ph89ql#1g=%s%a*-8&8rczc'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+STATIC_ROOT = 'static'
 
 
 # Application definition

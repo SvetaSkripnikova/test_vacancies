@@ -7,7 +7,7 @@ from accounts.models import Kandidat, Hr
 class Company(models.Model):
     name = models.CharField(max_length=128)
     location = models.CharField(max_length=128)
-    logo = models.CharField(max_length=1000)
+    logo = models.URLField(default='https://place-hold.it/100x60')
     description = models.CharField(max_length=3000)
 
     def __str__(self):
@@ -17,7 +17,7 @@ class Company(models.Model):
 class Specialty(models.Model):
     code = models.CharField(max_length=128)
     title = models.CharField(max_length=128)
-    picture = models.CharField(max_length=1000)
+    picture = models.URLField(default='https://place-hold.it/100x60')
 
     def __str__(self):
         return self.title
