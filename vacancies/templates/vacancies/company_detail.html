@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Компания | Digital Group</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+  <header class="container mt-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand mr-4 font-weight-bold" href="{% url 'home' %}">Digital Group</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav col-10">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'vacancies' %}">Вакансии</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'applications' %}">Мои отклики</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav col-2 justify-content-end">
+          <li class="nav-item active">
+            {% if request.user.is_authenticated %}
+            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+            <a href="#" class="nav-link font-weight-bold">{{ request.user.first_name }}</a>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mt-3">
+    <div class="navbar mt-5">
+      <p><a href="#">Назад</a></p>
+    </div>
+    <section>
+      <div class="text-center">
+        <img src="{{object.logo}}" width="150" height="80" alt="">
+      </div>
+      <h1 class="h1 text-center mx-auto mt-0 pt-1" style="font-size: 60px;"><strong>{{object.name}}</strong></h1>
+      <p class="text-center pt-1">Компания "{{ object.name }}", {{object.location}}, вакансий: {{vacancies.count}}</p>
+      <div class="row mt-5">
+          {% for vac in vacancies %}
+        <div class="col-12 col-lg-8 offset-lg-2 m-auto">
+          <div class="card mb-4">
+            <div class="card-body px-4">
+              <div class="row">
+                <div class="col-12 col-md-8 col-lg-9">
+                  <a href="{% url 'vacancy_detail' pk=vac.id %}">
+                  <h2 class="h2 pb-2">{{vac.title}}</h2>
+                  </a>
+                    {% for sp in speciality_list %}
+                    {% if sp.id == vac.speciality_id %}
+                  <a href="{% url 'categories' code=sp.code %}">
+                  <p class="h5 mb-2">{{sp.title}}</p>
+                  </a>
+                    {% endif %}
+                    {% endfor %}
+                  <p>От {{ vac.salary_min }} до {{ vac.salary_max }} руб/мес</p>
+                  <p class="text-muted pt-1">{{vac.published_at}}</p>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
+                  <a href="{% url 'company_detail' pk=object.id %}">
+                  <img src="{{object.logo}}" width="150" height="80" alt="">
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          {% endfor %}
+      </div>
+    </section>
+  </main>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

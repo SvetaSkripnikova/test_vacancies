@@ -45,6 +45,9 @@ class Vacancy(models.Model):
     def __str__(self):
         return self.title
 
+    def get_quizes(self):
+        return self.vacancy_quiz.all()
+
 
 class Status_Application(models.Model):
     code = models.CharField(max_length=128)
@@ -56,8 +59,11 @@ class Status_Application(models.Model):
 
 class Application(models.Model):
     kandidat = models.ForeignKey(Kandidat, on_delete=models.CASCADE, related_name="kandidat_application")
-    status = models.ForeignKey(Status_Application, on_delete=models.CASCADE, related_name="status_application")
+    status = models.ForeignKey(Status_Application, on_delete=models.CASCADE, related_name="status_application", default="1")
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name="vacancy_application")
+
+    def get_anketa_results(self):
+        return self.application_Anketa_Result.all()
 
 
 class Quiz(models.Model):
@@ -65,19 +71,24 @@ class Quiz(models.Model):
     deadline = models.IntegerField()
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name="vacancy_quiz")
 
+    def get_questions(self):
+        return self.quiz_question.all()
+
 
 class Question(models.Model):
-    text_question = models.CharField(max_length=128)
+    num = models.IntegerField()
+    text_question = models.CharField(max_length=1000)
     type_question = models.CharField(max_length=128)
     is_close = models.BooleanField(default=False)
-    time = models.DateTimeField(auto_now_add=True)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="quiz_question")
+
+    def get_answers(self):
+        return self.question_answer.all()
 
 
 class Answer(models.Model):
-    text_answer = models.CharField(max_length=128)
+    text_answer = models.CharField(max_length=3000)
     correct = models.BooleanField(default=False)
-    time = models.DateTimeField(auto_now_add=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_answer")
 
 
@@ -98,6 +109,17 @@ class Type_Anketa(models.Model):
 
 
 class Anketa_Result(models.Model):
-    type = models.ForeignKey(Type_Anketa, on_delete=models.CASCADE, related_name="type_Anketa_Result")
-    status = models.ForeignKey(Status_Anketa, on_delete=models.CASCADE, related_name="status_Anketa_Result")
+    type = models.ForeignKey(Type_Anketa, on_delete=models.CASCADE, related_name="type_Anketa_Result", default="1")
+    status = models.ForeignKey(Status_Anketa, on_delete=models.CASCADE, related_name="status_Anketa_Result", default="1")
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="application_Anketa_Result")
+
+    def get_absolute_url(self):
+        fl = self.application.vacancy.get_quizes()
+        return "/anketa/%p/questions/%i" % self.id % fl.values_list('id').first()
+
+
+class Result_answer(models.Model):
+    text_result = models.CharField(max_length=3000)
+    weight = models.FloatField(blank=True, default="0")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_result_answer")
+    anketa_result = models.ForeignKey(Anketa_Result, on_delete=models.CASCADE, related_name="anketa_result_result_answer")

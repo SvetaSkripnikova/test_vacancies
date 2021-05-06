@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Вакансии | Digital Group</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+{% load is_already_start_anket %}
+<body>
+  <header class="container mt-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand mr-4 font-weight-bold" href="{% url 'home' %}">Digital Group</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav col-10">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'vacancies' %}">Вакансии</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'applications' %}">Мои отклики</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav col-2 justify-content-end">
+          <li class="nav-item active">
+            {% if request.user.is_authenticated %}
+            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+            <a href="#" class="nav-link font-weight-bold">{{ request.user.first_name }}</a>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  <main class="container mt-5">
+      <section class="bg-light-gray">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h1 class="heading text-center">Все вакансии, на которые Вы откликнулись</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{title}}</strong></h1>
+      <p class="text-center pt-1">вакансий: {{object_list.count}}</p>
+      <div class="row mt-5">
+          {% for obj in object_list %}
+        <div class="col-12 col-lg-8 offset-lg-2 m-auto">
+          <div class="card mb-4">
+            <div class="card-body px-4">
+              <div class="row">
+                <div class="col-12 col-md-8 col-lg-9">
+                  <a href="{% url 'vacancy_detail' pk=obj.id %}">
+                    <h2 class="h2 pb-2">{{obj.vacancy.title}}</h2>
+                  </a>
+                  <p>От {{ obj.vacancy.salary_min }} до {{ obj.vacancy.salary_max }} руб/мес</p>
+                  <p class="text-muted pt-1">{{obj.vacancy.published_at}}</p>
+                </div>
+
+                <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
+                  {% if obj.get_anketa_results.first.status.id == 1 or obj.get_anketa_results.first == None %}
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizStartModal-{{obj.id}}">
+                    {{obj.status.title}}
+                  </button>
+                  {% elif obj.get_anketa_results.first.status.id == 2 %}
+                  <button type="button" class="btn btn-success" >
+                    Ваша анкета на проверке
+                  </button>
+                  {% endif %}
+                </div>
+                </form>
+
+                                <!-- Modal -->
+                <div class="modal fade" id="quizStartModal-{{obj.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Готовы начать?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      {% if obj.status.id == 1 %}
+                      <div class="modal-body" id="modal-body-confirm">
+                        <ul class="pt-3 pb-3">
+                        <li>Анкета на вакансию: {{obj.vacancy.get_quizes.first.title}}</li>
+                        <li>Время на выполнение: {{obj.vacancy.get_quizes.first.deadline}} ч</li>
+                        </ul>
+                      </div>
+                      {% endif %}
+                      <div class="modal-footer">
+                        <input type="submit" class="btn btn-secondary mt-4 mb-2" value="Отмена">
+                        {% is_already_start_anket obj as is_anket %}
+                        {% if is_anket %}
+                          <a href="{% url 'questions' id=obj.get_anketa_results.first.pk pk=obj.vacancy.get_quizes.first.pk %}?page=1">
+                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Продолжить">
+                          </a>
+                        {% else %}
+                        <form action="{% url 'start-anketa_result' application_id=obj.id %}" method="post"  enctype="multipart/form-data">
+                          {% csrf_token %}
+                          <input type="hidden" name="application" value="{{ obj.id }}">
+                          <a href="{% url 'start-anketa_result' application_id=obj.id %}">
+                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Старт">
+                          </a>
+                        </form>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+          {% endfor %}
+      </div>
+    </section>
+  </main>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

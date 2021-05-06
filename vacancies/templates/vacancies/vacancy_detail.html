@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Вакансия | Digital Group</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+{% load is_already_applied %}
+<body>
+  <header class="container mt-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand mr-4 font-weight-bold" href="{% url 'home' %}">Digital Group</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav col-10">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'vacancies' %}">Вакансии</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'applications' %}">Мои отклики</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav col-2 justify-content-end">
+          <li class="nav-item active">
+            {% if request.user.is_authenticated %}
+            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+            <a href="#" class="nav-link font-weight-bold">{{ request.user.first_name }}</a>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mt-3 pb-5">
+    <div class="row mt-5">
+      <div class="col-12 col-lg-2">
+        <div class="pl-3 mb-5">
+          <p><a href="#">Назад</a></p>
+        </div>
+      </div>
+      <div class="col-12 col-lg-8">
+        <section class="pl-3">
+            {% for com in company_list %}
+            {% if com.id == object.company_id %}
+          <a href="{% url 'company_detail' pk=com.id %}">
+              <img src="{{com.logo}}" width="150" height="80" alt="">
+          </a>
+            {% endif %}
+            {% endfor %}
+          <div class="d-flex align-items-baseline align-content-baseline">
+            <h1 class="h2 mt-4 font-weight-bold" >{{object.title}}</h1>
+            <p class="m-0 pl-3">{{ object.salary_min }} – {{ object.salary_max }} руб/мес</p>
+          </div>
+          {% for sp in speciality_list %}
+            {% if sp.id == object.speciality_id %}
+          <a href="{% url 'categories' code=sp.code %}">
+          <p class="h5 mt-2">{{sp.title}}</p>
+          </a>
+            {% endif %}
+          {% endfor %}
+          {% is_already_applied object request.user.id as is_applied %}
+          {% if is_applied %}
+            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Вы уже оставили отклик"/>
+          {% else %}
+          <form action="{% url 'apply-vacancy' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+            {% csrf_token %}
+              <input type="hidden" name="kandidat" value="{{ user.id }}">
+              <input type="hidden" name="status" value="1">
+              <input type="hidden" name="vacancy" value="{{ object.id }}">
+              <input type="submit" class="btn btn-primary mt-4 mb-2" value="Оставить отклик">
+          </form>
+          {% endif %}
+          <p class="text-muted mb-4"></p>
+          <div style="line-height: 1.8;">
+              {{object.description|safe}}
+          </div>
+          {% is_already_applied object request.user.id as is_applied %}
+          {% if is_applied %}
+            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Вы уже оставили отклик"/>
+          {% else %}
+          <form action="{% url 'apply-vacancy' object.id %}" method="post" class="card mt-4 mb-3" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card-body mx-3 center">
+              <p class="h5 text-center mt-3 font-weight-normal">Скорее оставляй отклик на вакансию!</p>
+              <input type="hidden" name="job" value="{{ object.id }}">
+              <div class="d-flex justify-content-center">
+              <input type="submit" class="btn align-center btn-primary mt-4 mb-2" value="Оставить отклик">
+              </div>
+            </div>
+          </form>
+          {% endif %}
+        </section>
+      </div>
+    </div>
+  </main>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
