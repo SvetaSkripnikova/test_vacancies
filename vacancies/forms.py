@@ -1,7 +1,7 @@
 from django import forms
 from django.db import transaction
 
-from vacancies.models import Application, Question, Result_answer, Anketa_Result
+from vacancies.models import Application, Question, Result_answer, Anketa_Result, Result_test, Result_osa
 from accounts.models import User
 
 
@@ -34,17 +34,10 @@ class StartAnketResultForm(forms.ModelForm):
         return new_anketa_result
 
 
-class UpdateAnketResultForm(forms.ModelForm):
+class UpdateApplicationAnketaForm(forms.ModelForm):
     class Meta:
-        model = Anketa_Result
+        model = Application
         fields = ("status",)
-
-    #@transaction.atomic
-    #def save(self):
-    #    anketa = super().save()
-    #    anketa.status = self.cleaned_data["status"]
-    #    anketa.save()
-    #    return anketa
 
 
 class QuestionsForm(forms.ModelForm):
@@ -63,3 +56,38 @@ class QuestionsForm(forms.ModelForm):
         new_result.save()
         return new_result
 
+
+class StartTestResultForm(forms.ModelForm):
+    class Meta:
+        model = Result_test
+        fields = ("text_result", "status", "application", "test",)
+
+
+class UpdateApplicationTestForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ("status",)
+
+
+class UpdateTestForm(forms.ModelForm):
+    class Meta:
+        model = Result_test
+        fields = ("text_result", "status",)
+
+
+class StartOsaResultForm(forms.ModelForm):
+    class Meta:
+        model = Result_osa
+        fields = ("code", "application", "osa",)
+
+
+class UpdateApplicationOsaForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ("status",)
+
+
+class UpdateOsaForm(forms.ModelForm):
+    class Meta:
+        model = Result_osa
+        fields = ("code",)

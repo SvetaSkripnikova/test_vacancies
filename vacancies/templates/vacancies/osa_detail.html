@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Вакансии | Digital Group</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+{% load is_already_osaed %}
+<body>
+  <header class="container mt-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand mr-4 font-weight-bold" href="{% url 'home' %}">Digital Group</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav col-10">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'vacancies' %}">Вакансии</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'applications' %}">Мои отклики</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav col-2 justify-content-end">
+          <li class="nav-item active">
+            {% if request.user.is_authenticated %}
+            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+            <a href="#" class="nav-link font-weight-bold">{{ request.user.first_name }}</a>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  <main class="container mt-3">
+    <section>
+      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{object.get_applications.first.title}}</strong></h1>
+      <div class="row mt-5">
+        <div class="col-12 col-lg-8 offset-lg-2 m-auto">
+          <div class="card mb-4">
+            <div class="card-body px-4">
+              <div class="row">
+                <div class="col-12 col-md-8 col-lg-9">
+                    <h6 class="h6 pb-2">Пройдите тест по ссылке, используя личный код: <a target="_blank" href="{{object.sait}}">{{object.sait}}</a></h6>
+                    <p>Это ваш личный код для теста: {{object.code}}</p>
+                        <p>Как пройдете тестирование, отправьте в ответ свой личный код, с которым проходили тест:</p>
+                            {% is_already_osaed object.get_applications.first.id object.id as is_osaed %}
+                                {% if is_osaed %}
+                                    <p>Ваш ответ успешно сохранен! Завершите этот этап.</p>
+                                    <form action="{% url 'application_osa_update' object.get_applications.first.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                            <input type="hidden" name="status" value="6">
+                                            <a href="{% url 'application_osa_update' object.get_applications.first.id %}">
+                                                <input type="submit" class="btn btn-primary mt-4 mb-2" value="Завершить">
+                                            </a>
+                                    </form>
+                                {% else %}
+                                <form autocomplete="off" action="{% url 'osa_result_update' app.get_osa_results.first.pk %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                                <input type="text" name="code"><br>
+                                        <a href="{% url 'osa_result_update' app.get_osa_results.first.pk %}">
+                                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Отправить на проверку">
+                                        </a>
+                                </form>
+                                {% endif %}
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+    </section>
+  </main>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

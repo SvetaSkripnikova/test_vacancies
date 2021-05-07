@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 {% load is_already_start_anket %}
+{% load is_already_start_test %}
+{% load is_already_start_osa %}
 <body>
   <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -55,7 +57,7 @@
             <div class="card-body px-4">
               <div class="row">
                 <div class="col-12 col-md-8 col-lg-9">
-                  <a href="{% url 'vacancy_detail' pk=obj.id %}">
+                  <a href="{% url 'vacancy_detail' pk=obj.vacancy.id %}">
                     <h2 class="h2 pb-2">{{obj.vacancy.title}}</h2>
                   </a>
                   <p>От {{ obj.vacancy.salary_min }} до {{ obj.vacancy.salary_max }} руб/мес</p>
@@ -63,19 +65,35 @@
                 </div>
 
                 <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
-                  {% if obj.get_anketa_results.first.status.id == 1 or obj.get_anketa_results.first == None %}
+                  {% if obj.status.id == 1 %}
                   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizStartModal-{{obj.id}}">
                     {{obj.status.title}}
                   </button>
-                  {% elif obj.get_anketa_results.first.status.id == 2 %}
+                  {% elif obj.status.id == 2 %}
                   <button type="button" class="btn btn-success" >
                     Ваша анкета на проверке
+                  </button>
+                  {% elif obj.status.id == 3 %}
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizTestModal-{{obj.id}}">
+                    Выполните тестовое задание
+                  </button>
+                  {% elif obj.status.id == 4 %}
+                  <button type="button" class="btn btn-success" >
+                    Ваше задание на проверке
+                  </button>
+                  {% elif obj.status.id == 5 %}
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizOsaModal-{{obj.id}}">
+                    Пройдите тест-оса
+                  </button>
+                  {% elif obj.status.id == 6 %}
+                  <button type="button" class="btn btn-success" >
+                    Ваш тест на проверке
                   </button>
                   {% endif %}
                 </div>
                 </form>
 
-                                <!-- Modal -->
+                                <!-- Start Modal -->
                 <div class="modal fade" id="quizStartModal-{{obj.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
@@ -105,6 +123,89 @@
                           {% csrf_token %}
                           <input type="hidden" name="application" value="{{ obj.id }}">
                           <a href="{% url 'start-anketa_result' application_id=obj.id %}">
+                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Старт">
+                          </a>
+                        </form>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                  <!-- Test Modal -->
+                <div class="modal fade" id="quizTestModal-{{obj.id}}" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="testModalLabel">Готовы начать?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      {% if obj.status.id == 3 %}
+                      <div class="modal-body" id="modal-test-confirm">
+                        <ul class="pt-3 pb-3">
+                        <li>Тест на вакансию: {{obj.vacancy.get_tests.first.title}}</li>
+                        <li>Время на выполнение: {{obj.vacancy.get_tests.first.deadline}} ч</li>
+                        </ul>
+                      </div>
+                      {% endif %}
+                      <div class="modal-footer">
+                        <input type="submit" class="btn btn-secondary mt-4 mb-2" value="Отмена">
+                        {% is_already_start_test obj.id as is_test %}
+                        {% if is_test %}
+                          <a href="{% url 'test_detail' obj.id obj.vacancy.get_tests.first.id %}">
+                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Продолжить">
+                          </a>
+                        {% else %}
+                        <form action="{% url 'start_test_result' obj.id %}" method="post"  enctype="multipart/form-data">
+                          {% csrf_token %}
+                          <input type="hidden" name="text_result" value="нет ответа">
+                          <input type="hidden" name="status" value="1">
+                          <input type="hidden" name="application" value="{{ obj.id }}">
+                          <input type="hidden" name="test" value="{{ obj.vacancy.get_tests.first.id }}">
+                          <a href="{% url 'start_test_result' obj.id %}">
+                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Старт">
+                          </a>
+                        </form>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Osa Modal -->
+                <div class="modal fade" id="quizOsaModal-{{obj.id}}" tabindex="-1" aria-labelledby="osaModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="osaModalLabel">Готовы начать?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      {% if obj.status.id == 5 %}
+                      <div class="modal-body" id="modal-osa-confirm">
+                        <ul class="pt-3 pb-3">
+                        <li>Тест на вакансию: {{obj.vacancy.get_tests.first.title}}</li>
+                        <li>Время на выполнение: {{obj.osa.deadline}} ч</li>
+                        </ul>
+                      </div>
+                      {% endif %}
+                      <div class="modal-footer">
+                        <input type="submit" class="btn btn-secondary mt-4 mb-2" value="Отмена">
+                        {% is_already_start_osa obj.id as is_osa %}
+                        {% if is_osa %}
+                          <a href="{% url 'osa_detail' obj.id obj.osa.id %}">
+                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Продолжить">
+                          </a>
+                        {% else %}
+                        <form action="{% url 'start_osa_result' obj.id %}" method="post"  enctype="multipart/form-data">
+                          {% csrf_token %}
+                          <input type="hidden" name="code" value="-">
+                          <input type="hidden" name="application" value="{{ obj.id }}">
+                          <input type="hidden" name="osa" value="{{ obj.osa.id }}">
+                          <a href="{% url 'start_osa_result' obj.id %}">
                             <input type="submit" class="btn btn-primary mt-4 mb-2" value="Старт">
                           </a>
                         </form>

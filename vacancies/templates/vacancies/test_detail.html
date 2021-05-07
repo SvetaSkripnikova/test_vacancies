@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
-
+{% load is_already_tested %}
 <body>
   <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -35,57 +35,37 @@
       </div>
     </nav>
   </header>
-  {% load is_already_answered %}
   <main class="container mt-3">
     <section>
-      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{title}}</strong></h1>
-      <p class="text-center pt-1">Всего вопросов: {{questions_list.count}}</p>
+      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{object.title}}</strong></h1>
       <div class="row mt-5">
-
-          {% for obj in questions %}
         <div class="col-12 col-lg-8 offset-lg-2 m-auto">
           <div class="card mb-4">
             <div class="card-body px-4">
               <div class="row">
                 <div class="col-12 col-md-8 col-lg-9">
-                        <h6 class="h6 pb-2">{{obj.num}}) {{obj.text_question}}</h6>
-                        {% is_already_answered obj.id id as is_answered %}
-                            {% if is_answered %}
-                                {% if obj.num != qw_kol %}
-                                    <p>Ваш ответ успешно сохранен! Перейдите к следующей странице, чтобы завершить анкету</p>
-                                    <a href="?page={{obj.num|add:1}}">
-                                        <input type="submit" class="btn btn-primary mt-4 mb-2" value="Следующий вопрос">
-                                    </a>
-                                {% else %}
-                                    <p>Ваш ответ успешно сохранен! Перейдите к следующей странице, чтобы завершить анкету</p>
-                                    <form action="{% url 'application_anketa_update' id_app %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                    <h6 class="h6 pb-2">Выполните тестовое задание по ссылке: <a target="_blank" href="{{object.description}}">{{object.description}}</a></h6>
+                        <p>Ответ отправьте ссылкой на гугл-документ:</p>
+                            {% is_already_tested app.id object.id as is_tested %}
+                                {% if is_tested %}
+                                    <p>Ваш ответ успешно сохранен! Завершите этот этап.</p>
+                                    <form action="{% url 'application_test_update' app.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
                                         {% csrf_token %}
-                                            <input type="hidden" name="status" value="2">
-                                            <a href="{% url 'application_anketa_update' id_app %}">
-                                                <input type="submit" class="btn btn-primary mt-4 mb-2" value="Завершить анкету">
+                                            <input type="hidden" name="status" value="4">
+                                            <a href="{% url 'application_test_update' app.id %}">
+                                                <input type="submit" class="btn btn-primary mt-4 mb-2" value="Завершить">
                                             </a>
                                     </form>
-                                {% endif %}
-                            {% else %}
-                                <form autocomplete="off" action="{% url 'answer' id=id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                                {% else %}
+                                <form autocomplete="off" action="{% url 'test_result_update' app.get_test_results.first.pk %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                        {% if obj.is_close %}
-                                            {% for answer in obj.get_answers %}
-                                                <label for="text_result"><input for="text_result" type="radio" name="text_result" value="{{ answer.text_answer }}">{{ answer.text_answer }}</label><br>
-                                                <input type="hidden" name="question" value="{{ obj.id }}">
-                                                <input type="hidden" name="anketa_result" value="{{ id }}">
-                                            {% endfor %}
-                                        {% else %}
-
                                                 <input for="text_result" id="text_result" type="text" name="text_result" ><br>
-                                                <input type="hidden" name="question" value="{{ obj.id }}">
-                                                <input type="hidden" name="anketa_result" value="{{ id }}">
-                                        {% endif %}
-                                        <a href="{% url 'answer' id=id %}">
+                                                <input type="hidden" name="status" value="2">
+                                        <a href="{% url 'test_result_update' app.get_test_results.first.pk %}">
                                             <input type="submit" class="btn btn-primary mt-4 mb-2" value="Отправить на проверку">
                                         </a>
                                 </form>
-                            {% endif %}
+                                {% endif %}
 
                 </div>
               </div>
@@ -93,9 +73,6 @@
           </div>
         </div>
         </div>
-        {% endfor %}
-          <div class="pagination">
-          </div>
     </section>
   </main>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

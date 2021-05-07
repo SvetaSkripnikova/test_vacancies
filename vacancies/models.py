@@ -48,6 +48,9 @@ class Vacancy(models.Model):
     def get_quizes(self):
         return self.vacancy_quiz.all()
 
+    def get_tests(self):
+        return self.vacancy_test.all()
+
 
 class Status_Application(models.Model):
     code = models.CharField(max_length=128)
@@ -57,18 +60,43 @@ class Status_Application(models.Model):
         return self.title
 
 
+class Status_Osa(models.Model):
+    code = models.CharField(max_length=128)
+    title = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.title
+
+
+class Osa(models.Model):
+    sait = models.CharField(max_length=128)
+    code = models.CharField(max_length=128)
+    deadline = models.IntegerField(default=24)
+    status = models.ForeignKey(Status_Osa, on_delete=models.CASCADE, related_name="status_osa")
+
+    def get_applications(self):
+        return self.osa_application.all()
+
+
 class Application(models.Model):
     kandidat = models.ForeignKey(Kandidat, on_delete=models.CASCADE, related_name="kandidat_application")
     status = models.ForeignKey(Status_Application, on_delete=models.CASCADE, related_name="status_application", default="1")
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name="vacancy_application")
+    osa = models.ForeignKey(Osa, on_delete=models.CASCADE, related_name="osa_application", blank=True)
 
     def get_anketa_results(self):
         return self.application_Anketa_Result.all()
 
+    def get_test_results(self):
+        return self.application_Result_test.all()
+
+    def get_osa_results(self):
+        return self.application_Result_osa.all()
+
 
 class Quiz(models.Model):
     title = models.CharField(max_length=128)
-    deadline = models.IntegerField()
+    deadline = models.IntegerField(default=24)
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name="vacancy_quiz")
 
     def get_questions(self):
@@ -123,3 +151,31 @@ class Result_answer(models.Model):
     weight = models.FloatField(blank=True, default="0")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_result_answer")
     anketa_result = models.ForeignKey(Anketa_Result, on_delete=models.CASCADE, related_name="anketa_result_result_answer")
+
+
+class Status_Test(models.Model):
+    code = models.CharField(max_length=128)
+    title = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.title
+
+
+class Test(models.Model):
+    title = models.CharField(max_length=128)
+    description = models.CharField(max_length=500)
+    deadline = models.IntegerField(default=24)
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name="vacancy_test")
+
+
+class Result_test(models.Model):
+    text_result = models.CharField(max_length=500)
+    status = models.ForeignKey(Status_Test, on_delete=models.CASCADE, related_name="status_Result_test", default=1)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="application_Result_test")
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="test_result_test")
+
+
+class Result_osa(models.Model):
+    code = models.CharField(max_length=128)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="application_Result_osa")
+    osa = models.ForeignKey(Osa, on_delete=models.CASCADE, related_name="osa_result_osa")

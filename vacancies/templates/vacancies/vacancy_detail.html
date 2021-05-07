@@ -79,18 +79,19 @@
           <div style="line-height: 1.8;">
               {{object.description|safe}}
           </div>
-          {% is_already_applied object request.user.id as is_applied %}
           {% if is_applied %}
             <input type="submit" class="btn btn-primary mt-4 mb-2" value="Вы уже оставили отклик"/>
           {% else %}
-          <form action="{% url 'apply-vacancy' object.id %}" method="post" class="card mt-4 mb-3" enctype="multipart/form-data">
-            {% csrf_token %}
+            <form action="{% url 'apply-vacancy' object.id %}" method="post" class="card mt-4 mb-3" enctype="multipart/form-data">
+              {% csrf_token %}
             <div class="card-body mx-3 center">
               <p class="h5 text-center mt-3 font-weight-normal">Скорее оставляй отклик на вакансию!</p>
-              <input type="hidden" name="job" value="{{ object.id }}">
-              <div class="d-flex justify-content-center">
-              <input type="submit" class="btn align-center btn-primary mt-4 mb-2" value="Оставить отклик">
-              </div>
+                <input type="hidden" name="kandidat" value="{{ user.id }}">
+                <input type="hidden" name="status" value="1">
+                <input type="hidden" name="vacancy" value="{{ object.id }}">
+                <div class="d-flex justify-content-center">
+                  <input type="submit" class="btn align-center btn-primary mt-4 mb-2" value="Оставить отклик">
+                </div>
             </div>
           </form>
           {% endif %}

@@ -16,9 +16,11 @@ from django.views import View
 from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView
 
 from accounts.models import Kandidat
-from vacancies.forms import ApplyVacancyForm, StartAnketResultForm, QuestionsForm, UpdateAnketResultForm
+from vacancies.forms import ApplyVacancyForm, StartAnketResultForm, QuestionsForm, \
+    UpdateApplicationAnketaForm, StartTestResultForm, UpdateApplicationTestForm, UpdateTestForm, StartOsaResultForm, \
+    UpdateOsaForm, UpdateApplicationOsaForm
 from vacancies.models import Specialty, Company, Vacancy, Application, Status_Application, Question, Quiz, \
-    Anketa_Result, Result_answer, Status_Anketa
+    Anketa_Result, Result_answer, Status_Anketa, Result_test, Test, Osa, Result_osa
 
 
 class MainView(LoginRequiredMixin, TemplateView):
@@ -71,12 +73,6 @@ class ApplyVacancyView(CreateView):
 
     def get_success_url(self):
         return reverse_lazy("vacancy_detail", kwargs={"pk": self.kwargs["vacancy_id"]})
-
-    # def get_form_kwargs(self):
-    #     kwargs = super(ApplyJobView, self).get_form_kwargs()
-    #     print(kwargs)
-    #     kwargs['job'] = 1
-    #     return kwargs
 
     def form_valid(self, form):
         # check if user already applied
@@ -158,11 +154,11 @@ class StartAnketaResultView(CreateView):
         return super().form_valid(form)
 
 
-class UpdateAnketaResultView(UpdateView):
-    model = Anketa_Result
+class UpdateApplicationAnketaView(UpdateView):
+    model = Application
     pk_url_kwarg = 'pk'
     template_name = "vacancies/questions_list.html"
-    form_class = UpdateAnketResultForm
+    form_class = UpdateApplicationAnketaForm
 
     def get_success_url(self):
         return reverse_lazy('applications')
@@ -180,6 +176,7 @@ class QuestionsListView(ListView):
         context["qw_kol"] = Question.objects.filter(quiz__pk=self.kwargs["pk"]).count
         context["title"] = get_object_or_404(Quiz, pk=self.kwargs["pk"]).title
         context["id"] = get_object_or_404(Anketa_Result, id=self.kwargs["id"]).pk
+        context["id_app"] = get_object_or_404(Anketa_Result, id=self.kwargs["id"]).application.pk
         return context
 
     def get_queryset(self):
@@ -208,6 +205,80 @@ class CreateAnswer(CreateView):
             return HttpResponseRedirect(reverse_lazy('questions', kwargs={'id': self.request.id, 'pk': self.request.pk}))
 
 
+class DetailTestView(DetailView):
+    model = Test
+    template_name = "vacancies/test_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailTestView, self).get_context_data(**kwargs)
+        context["app"] = Application.objects.get(id=self.kwargs["id"])
+        #context["id"] = get_object_or_404(Application, id=self.kwargs["id"]).pk
+        return context
 
 
+class StartTestResultView(CreateView):
+    model = Result_test
+    template_name = "vacancies/test_detail.html"
+    form_class = StartTestResultForm
 
+    def get_success_url(self):
+        return reverse_lazy('test_detail', kwargs={'id': self.object.application.pk, 'pk': self.object.test.pk})
+
+
+class UpdateTestView(UpdateView):
+    model = Result_test
+    pk_url_kwarg = 'pk'
+    template_name = "vacancies/test_detail.html"
+    form_class = UpdateTestForm
+
+    def get_success_url(self):
+        return reverse_lazy('test_detail', kwargs={'id': self.object.application.pk, 'pk': self.object.test.pk})
+
+
+class UpdateApplicationTestView(UpdateView):
+    model = Application
+    pk_url_kwarg = 'pk'
+    template_name = "vacancies/test_detail.html"
+    form_class = UpdateApplicationTestForm
+
+    def get_success_url(self):
+        return reverse_lazy('applications')
+
+
+class DetailOsaView(DetailView):
+    model = Osa
+    template_name = "vacancies/osa_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailOsaView, self).get_context_data(**kwargs)
+        context["app"] = Application.objects.get(id=self.kwargs["id"])
+        return context
+
+
+class StartOsaResultView(CreateView):
+    model = Result_osa
+    template_name = "vacancies/osa_detail.html"
+    form_class = StartOsaResultForm
+
+    def get_success_url(self):
+        return reverse_lazy('osa_detail', kwargs={'id': self.object.application.pk, 'pk': self.object.osa.pk})
+
+
+class UpdateOsaView(UpdateView):
+    model = Result_osa
+    pk_url_kwarg = 'pk'
+    template_name = "vacancies/osa_detail.html"
+    form_class = UpdateOsaForm
+
+    def get_success_url(self):
+        return reverse_lazy('osa_detail', kwargs={'id': self.object.application.pk, 'pk': self.object.osa.pk})
+
+
+class UpdateApplicationOsaView(UpdateView):
+    model = Application
+    pk_url_kwarg = 'pk'
+    template_name = "vacancies/osa_detail.html"
+    form_class = UpdateApplicationOsaForm
+
+    def get_success_url(self):
+        return reverse_lazy('applications')
