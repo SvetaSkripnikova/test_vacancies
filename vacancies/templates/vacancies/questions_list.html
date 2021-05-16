@@ -35,14 +35,23 @@
       </div>
     </nav>
   </header>
+  {% load static %}
   {% load is_already_answered %}
   <main class="container mt-3">
     <section>
       <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{title}}</strong></h1>
       <p class="text-center pt-1">Всего вопросов: {{questions_list.count}}</p>
-      <div class="row mt-5">
 
+          <div id="countdown-box" type="hidden" class="text-center pt-1">
+              <div class="spinner-border" role="status"></div>
+          </div>
+      <div class="row mt-5">
+          {% block scripts %}
+            <script src="{% static 'main.js' %}" defer></script>
+          {% endblock scripts %}
           {% for obj in questions %}
+          <div id="date-box" type="hidden" cl="{{deadline}}"></div>
+          <div id="date-start" type="hidden" cl="{{start|date:'U'}}"></div>
         <div class="col-12 col-lg-8 offset-lg-2 m-auto">
           <div class="card mb-4">
             <div class="card-body px-4">

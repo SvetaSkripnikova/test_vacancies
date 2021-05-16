@@ -175,7 +175,9 @@ class QuestionsListView(ListView):
         context["questions_list"] = Question.objects.filter(quiz__pk=self.kwargs["pk"])
         context["qw_kol"] = Question.objects.filter(quiz__pk=self.kwargs["pk"]).count
         context["title"] = get_object_or_404(Quiz, pk=self.kwargs["pk"]).title
+        context["deadline"] = get_object_or_404(Quiz, pk=self.kwargs["pk"]).deadline
         context["id"] = get_object_or_404(Anketa_Result, id=self.kwargs["id"]).pk
+        context["start"] = get_object_or_404(Anketa_Result, id=self.kwargs["id"]).start
         context["id_app"] = get_object_or_404(Anketa_Result, id=self.kwargs["id"]).application.pk
         return context
 

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Digital Group</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+  <header class="container mt-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand mr-4" href="{% url 'home' %}">Digital Group</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav col-10">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'vacancies' %}">Вакансии</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'applications' %}">Мои отклики</a>
+          </li>
+
+        </ul>
+        {% if request.user.is_authenticated %}
+        <ul class="navbar-nav col-2 justify-content-end">
+                <button type="button" class="btn dropdown-toggle font-weight-bold" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ request.user.first_name }}
+                </button>
+                  <div class="dropdown-menu dropdown-menu-right mt-3">
+                    <a href="{% url 'vacancies-hr' %}" class="dropdown-item py-2">Вакансии</a>
+                    <a href="{% url 'companies-hr' %}" class="dropdown-item py-2">Компании</a>
+                    <a href="#" class="dropdown-item py-2">Отклики</a>
+                  </div>
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+          </li>
+            {% endif %}
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mt-3 pb-5">
+    <div class="row mt-5">
+      <div class="col-12 col-lg-4">
+        <aside class="pt-3 pb-4 px-4 mb-5 card">
+          <h1 class="h4 pt-2 pb-2">Вакансия {{object.title}}</h1>
+          <div class="nav flex-column nav-pills">
+            <a class="nav-link" href="{% url 'update-vacancy' object.id %}">1. Информация о вакансии</a>
+            <a class="nav-link active" href="{% url 'applications-vacancy' object.id %}">2. Отклики вакансии</a>
+          </div>
+        </aside>
+      </div>
+
+      <div class="col-12 col-lg-8">
+        <div class="card">
+          <div class="card-body px-4 pb-4">
+            <section class="tab-pane fade show active">
+              <h2 class="h4 pt-2 pb-3">Всего откликов: {{apps_all.count}}</h2>
+              <!-- go anketa -->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Проходят анкету</a>
+                      <p class="mb-1 pb-0">
+                        <a href="#" class="text-info">откликов: {{apps_go_anket.count}}</a>
+                      </p>
+                      <div class="progress mb-0">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" width="{{count_go_anket}}%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">{{count_go_anket}}%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- END go anketa -->
+              <!-- wait anketa -->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Ожидают проверки анкеты</a>
+                      <p class="mb-0 pb-0">
+                        <a href="#" class="text-info">откликов: {{apps_anket.count}}</a>
+                      </p>
+                    </div>
+                    {% if apps_anket.count != 0 %}
+                    <div class="col-6 col-lg-4 text-right">
+                      <a href="" class="btn btn-outline-primary">К проверке</a>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <!-- END wait anketa -->
+              <!-- fail anket-->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Пропустили дедлайн анкетирования</a>
+                      <p class="mb-0 pb-0">
+                        <a href="#" class="text-info">откликов: {{fail_anket}}</a>
+                      </p>
+                    </div>
+                    {% if fail_anket != 0 %}
+                    <div class="col-6 col-lg-4 text-right">
+                      <a href="" class="btn btn-outline-danger">К проверке</a>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <!-- END fail anket -->
+              <!-- go test -->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Проходят тестовое задание</a>
+                      <p class="mb-0 pb-0">
+                        <a href="#" class="text-info">откликов: {{apps_go_test.count}}</a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- END go test -->
+              <!-- wait test -->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Ожидают проверки тестового задания</a>
+                      <p class="mb-0 pb-0">
+                        <a href="#" class="text-info">откликов: {{apps_test.count}}</a>
+                      </p>
+                    </div>
+                    {% if apps_test.count != 0 %}
+                    <div class="col-6 col-lg-4 text-right">
+                      <a href="" class="btn btn-outline-primary">К проверке</a>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <!-- END wait test -->
+              <!-- fail test-->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Пропустили дедлайн тестового задания</a>
+                      <p class="mb-0 pb-0">
+                        <a href="#" class="text-info">откликов: {{fail_test}}</a>
+                      </p>
+                    </div>
+                    {% if fail_test != 0 %}
+                    <div class="col-6 col-lg-4 text-right">
+                      <a href="" class="btn btn-outline-danger">К проверке</a>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <!-- END fail test -->
+              <!-- go osa -->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Проходят ОСА-тест</a>
+                      <p class="mb-0 pb-0">
+                        <a href="#" class="text-info">откликов: {{apps_go_osa.count}}</a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- END go osa -->
+              <!-- wait osa -->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Ожидают проверки ОСА-теста</a>
+                      <p class="mb-0 pb-0">
+                        <a href="#" class="text-info">откликов: {{apps_osa.count}}</a>
+                      </p>
+                    </div>
+                    {% if apps_osa.count != 0 %}
+                    <div class="col-6 col-lg-4 text-right">
+                      <a href="" class="btn btn-outline-primary">К проверке</a>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <!-- END wait osa -->
+              <!-- fail osa-->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">Пропустили дедлайн оса-теста</a>
+                      <p class="mb-0 pb-0">
+                        <a href="#" class="text-info">откликов: {{fail_osa}}</a>
+                      </p>
+                      <div class="progress mb-0">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-dander" role="progressbar" style="width: url('{{count_fail_osa}}') %" width="{{count_fail_osa}}%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">{{count_fail_osa}}%</div>
+                      </div>
+                    </div>
+                    {% if fail_osa != 0 %}
+                    <div class="col-6 col-lg-4 text-right">
+                      <a href="" class="btn btn-outline-danger">К проверке</a>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <!-- END fail osa -->
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

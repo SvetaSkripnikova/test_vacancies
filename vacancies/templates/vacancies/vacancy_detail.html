@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 {% load is_already_applied %}
+{% load is_limit_app %}
 <body>
   <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -64,16 +65,21 @@
             {% endif %}
           {% endfor %}
           {% is_already_applied object request.user.id as is_applied %}
-          {% if is_applied %}
-            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Вы уже оставили отклик"/>
+          {%  is_limit_app request.user.id as is_limit %}
+          {% if is_limit %}
+            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Вы достигли лимита откликов 3/3"/>
           {% else %}
-          <form action="{% url 'apply-vacancy' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
-            {% csrf_token %}
-              <input type="hidden" name="kandidat" value="{{ user.id }}">
-              <input type="hidden" name="status" value="1">
-              <input type="hidden" name="vacancy" value="{{ object.id }}">
-              <input type="submit" class="btn btn-primary mt-4 mb-2" value="Оставить отклик">
-          </form>
+            {% if is_applied %}
+              <input type="submit" class="btn btn-primary mt-4 mb-2" value="Вы уже оставили отклик"/>
+            {% else %}
+              <form action="{% url 'apply-vacancy' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                {% csrf_token %}
+                  <input type="hidden" name="kandidat" value="{{ user.id }}">
+                  <input type="hidden" name="status" value="1">
+                  <input type="hidden" name="vacancy" value="{{ object.id }}">
+                  <input type="submit" class="btn btn-primary mt-4 mb-2" value="Оставить отклик">
+              </form>
+            {% endif %}
           {% endif %}
           <p class="text-muted mb-4"></p>
           <div style="line-height: 1.8;">

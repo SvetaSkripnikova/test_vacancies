@@ -14,8 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path
+
+from test_vacancies import settings
 from vacancies import views
 from vacancies.forms import StartTestResultForm
 from vacancies.views import DetailCompanyView, DetailVacancyView, ListVacanciesView, ListCategoriesView, \
@@ -46,4 +49,4 @@ urlpatterns = [
     path('application/<int:id>/osa/<int:pk>', DetailOsaView.as_view(), name="osa_detail"),
     path("application_osa_update/<int:pk>/", UpdateApplicationOsaView.as_view(), name="application_osa_update"),
     path("osa_result_update/<int:pk>/", UpdateOsaView.as_view(), name="osa_result_update"),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

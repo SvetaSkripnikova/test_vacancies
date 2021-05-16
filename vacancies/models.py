@@ -1,6 +1,11 @@
+from datetime import datetime, timedelta
+from itertools import count
+
 from django.db import models
 
 # Create your models here.
+from django.utils.timezone import utc
+
 from accounts.models import Kandidat, Hr
 
 
@@ -8,10 +13,13 @@ class Company(models.Model):
     name = models.CharField(max_length=128)
     location = models.CharField(max_length=128)
     logo = models.URLField(default='https://place-hold.it/100x60')
-    description = models.CharField(max_length=3000)
+    description = models.CharField(max_length=6000)
 
     def __str__(self):
         return self.name
+
+    def get_vacancies(self):
+        return self.company.all()
 
 
 class Specialty(models.Model):
@@ -36,7 +44,7 @@ class Vacancy(models.Model):
     speciality = models.ForeignKey(Specialty, on_delete=models.CASCADE, related_name="speciality")
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company")
     status = models.ForeignKey(Status_Vacancy, on_delete=models.CASCADE, related_name="status_vacancy")
-    description = models.CharField(max_length=3000)
+    description = models.CharField(max_length=6000)
     salary_min = models.IntegerField()
     salary_max = models.IntegerField()
     published_at = models.DateField(auto_now_add=True)
@@ -50,6 +58,9 @@ class Vacancy(models.Model):
 
     def get_tests(self):
         return self.vacancy_test.all()
+
+    def get_applications(self):
+        return self.vacancy_application.all()
 
 
 class Status_Application(models.Model):
@@ -92,6 +103,37 @@ class Application(models.Model):
 
     def get_osa_results(self):
         return self.application_Result_osa.all()
+
+    @property
+    def is_deadline_anketa(self):
+        if (self.status.id == 1) & (len(self.application_Anketa_Result.all()) == 1) \
+                & (self.application_Anketa_Result.first() != 0):
+            finish = self.get_anketa_results().values_list('start')[0][0] + timedelta(
+                hours=int(self.vacancy.get_quizes().values_list('deadline')[0][0]))
+            if finish <= utc.localize(datetime.now()):
+                return True
+        else:
+            return False
+
+    @property
+    def is_deadline_test(self):
+        if (self.status.id == 3) & (len(self.application_Result_test.all()) == 1) \
+                & (self.application_Result_test.first() != 0):
+            finish = self.get_test_results().values_list('start')[0][0] + timedelta(hours=int(self.vacancy.get_tests().values_list('deadline')[0][0]))
+            if finish <= utc.localize(datetime.now()):
+                return True
+        else:
+            return False
+
+    @property
+    def is_deadline_osa(self):
+        if (self.status.id == 5) & (len(self.application_Result_osa.all()) == 1)\
+                & (self.application_Result_osa.first() != 0):
+            finish = self.get_osa_results().values_list('start')[0][0] + timedelta(hours=self.osa.deadline)
+            if finish <= utc.localize(datetime.now()):
+                return True
+        else:
+            return False
 
 
 class Quiz(models.Model):
@@ -140,6 +182,7 @@ class Anketa_Result(models.Model):
     type = models.ForeignKey(Type_Anketa, on_delete=models.CASCADE, related_name="type_Anketa_Result", default="1")
     status = models.ForeignKey(Status_Anketa, on_delete=models.CASCADE, related_name="status_Anketa_Result", default="1")
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="application_Anketa_Result")
+    start = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
         fl = self.application.vacancy.get_quizes()
@@ -173,9 +216,11 @@ class Result_test(models.Model):
     status = models.ForeignKey(Status_Test, on_delete=models.CASCADE, related_name="status_Result_test", default=1)
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="application_Result_test")
     test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="test_result_test")
+    start = models.DateTimeField(auto_now_add=True)
 
 
 class Result_osa(models.Model):
     code = models.CharField(max_length=128)
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="application_Result_osa")
     osa = models.ForeignKey(Osa, on_delete=models.CASCADE, related_name="osa_result_osa")
+    start = models.DateTimeField(auto_now_add=True)
