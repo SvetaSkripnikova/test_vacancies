@@ -7,8 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
-{% load static %}
-{% load is_already_osaed %}
+
 <body>
     <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -47,44 +46,45 @@
   </header>
   <main class="container mt-3">
     <section>
-      {% block scripts %}
-        <script src="{% static 'main.js' %}" defer></script>
-      {% endblock scripts %}
-      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{object.get_applications.first.title}}</strong></h1>
-        <div id="countdown-box" type="hidden" class="text-center pt-1">
-              <div class="spinner-border" role="status"></div>
-        </div>
+      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{title}}</strong></h1>
       <div class="row mt-5">
         <div class="col-12 col-lg-8 offset-lg-2 m-auto">
           <div class="card mb-4">
             <div class="card-body px-4">
               <div class="row">
-                  <div id="date-box" type="hidden" cl="{{object.deadline}}"></div>
-                  <div id="date-start" type="hidden" cl="{{app.get_osa_results.first.start|date:'U'}}"></div>
                 <div class="col-12 col-md-8 col-lg-9">
-                    <h6 class="h6 pb-2">Пройдите тест по ссылке, используя личный код: <a target="_blank" href="{{object.sait}}">{{object.sait}}</a></h6>
-                    <p>Это ваш личный код для теста: {{object.code}}</p>
-                        <p>Как пройдете тестирование, отправьте в ответ свой личный код, с которым проходили тест:</p>
-                            {% is_already_osaed object.get_applications.first.id object.id as is_osaed %}
-                                {% if is_osaed %}
-                                    <p>Ваш ответ успешно сохранен! Завершите этот этап.</p>
-                                    <form action="{% url 'application_osa_update' object.get_applications.first.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                            <input type="hidden" name="status" value="6">
-                                            <a href="{% url 'application_osa_update' object.get_applications.first.id %}">
-                                                <input type="submit" class="btn btn-primary mt-4 mb-2" value="Завершить">
-                                            </a>
-                                    </form>
-                                {% else %}
-                                <form autocomplete="off" action="{% url 'osa_result_update' app.get_osa_results.first.pk %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                    <h6 class="h6 pb-2">Задание:
+                      <a target="_blank" href="{{object.test.description}}">{{object.test.description}}</a>
+                    </h6>
+                    <h6 class="h6 pb-2">Выполненное задание кандидата:
+                      <a target="_blank" href="{{object.text_result}}">{{object.text_result}}</a>
+                    </h6>
+                    {% if object.application.osa.pk == 0 %}
+                    <form action="{% url 'update-test-result-application' object.application.pk %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                                <input type="text" name="code"><br>
-                                        <a href="{% url 'osa_result_update' app.get_osa_results.first.pk %}">
-                                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Отправить на проверку">
-                                        </a>
-                                </form>
-                                {% endif %}
-
+                                        <input type="hidden" name="status" value="10">
+                                    <a href="{% url 'update-test-result-application' object.application.pk %}">
+                                        <input type="submit" class="btn btn-danger mt-4 mb-2" value="Отказ по вакансии">
+                                    </a>
+                    </form>
+                    <form action="{% url 'update-test-result-application' object.application.pk %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                        <input type="hidden" name="status" value="5">
+                                        <input type="hidden" name="osa" value="{{osa.first.pk}}">
+                                    <a href="{% url 'update-test-result-application' object.application.pk %}">
+                                        <input type="submit" class="btn btn-primary mt-4 mb-2" value="Открыть следующий этап">
+                                    </a>
+                    </form>
+                    {% else %}
+                    <p>Ваш выбор сохранен, завершите проверку</p>
+                    <form action="{% url 'update-osa-hr' osa.first.pk %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                        <input type="hidden" name="status" value="2">
+                                    <a href="{% url 'update-osa-hr' osa.first.pk %}">
+                                        <input type="submit" class="btn btn-primary mt-4 mb-2" value="Завершить">
+                                    </a>
+                    </form>
+                    {% endif %}
                 </div>
               </div>
             </div>

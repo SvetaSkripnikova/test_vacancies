@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  <header class="container mt-3">
+    <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand mr-4" href="{% url 'home' %}">Digital Group</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,8 +32,9 @@
                 </button>
                   <div class="dropdown-menu dropdown-menu-right mt-3">
                     <a href="{% url 'vacancies-hr' %}" class="dropdown-item py-2">Вакансии</a>
-                    <a href="{% url 'companies-hr' %}"class="dropdown-item py-2">Компании</a>
-                    <a href="#" class="dropdown-item py-2">Отклики</a>
+                    <a href="{% url 'companies-hr' %}" class="dropdown-item py-2">Компании</a>
+                    <a href="{% url 'applications-hr-all' %}" class="dropdown-item py-2">Отклики</a>
+                    <a href="{% url 'OSA-hr' %}" class="dropdown-item py-2">База ОСА</a>
                   </div>
           <li class="nav-item active">
             <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
@@ -45,7 +46,7 @@
   </header>
   <main class="container mt-3">
     <section>
-      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{title}}</strong></h1>
+      <h1 class="h1 text-center mx-auto mt-4 pt-5">{{title}}</h1>
       <p class="text-center pt-1">вакансий: {{object_list.count}}</p>
       <form action="{% url 'create-vacancy' %}" class="text-center mt-2 mb-3" enctype="multipart/form-data">
         <input type="submit" class="btn btn-outline-primary" value="Создать новую">
@@ -57,12 +58,12 @@
             <div class="card-body px-4">
               <div class="row">
                 <div class="col-12 col-md-4 col-lg-4 align-self-center">
-                  <a href="{% url 'vacancy_detail' pk=obj.id %}">
+                  <a href="{% url 'update-vacancy' pk=obj.id %}">
                     <h5 class="h5 pb-2">{{obj.title}}</h5>
                   </a>
                     {% for sp in speciality_list %}
                     {% if sp.id == obj.speciality_id %}
-                  <a href="{% url 'categories' code=sp.code %}">
+                  <a href="">
                   <p class="h6 mb-2">{{ sp.title }}</p>
                   </a>
                     {% endif %}
@@ -72,14 +73,20 @@
                 <div class="col-12 col-md-4 col-lg-4 text-center align-self-center">
                     {% for com in company_list %}
                     {% if com.id == obj.company_id %}
-                  <a href="{% url 'company_detail' pk=com.id %}"><img src="{{com.logo}}" width="190" height="90" alt=""></a>
+                  <a href="{% url 'update-company' pk=com.id %}"><img src="{{com.logo}}" width="190" height="90" alt=""></a>
                     {% endif %}
                     {% endfor %}
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 text-right align-self-center">
+                    {% if obj.get_applications.count != 0 %}
                     <form action="{% url 'applications-vacancy' obj.id %}" class="mt-2 mb-3" enctype="multipart/form-data">
                       <input type="submit" class="btn btn-secondary" value="Отклики: {{obj.get_applications.count}}">
                     </form>
+                    {% else %}
+                    <form action="" class="mt-2 mb-3" enctype="multipart/form-data">
+                      <input type="submit" class="btn btn-secondary" value="Отклики: {{obj.get_applications.count}}">
+                    </form>
+                    {% endif %}
                     <form action="{% url 'update-vacancy' obj.id %}" class="mt-2 mb-3" enctype="multipart/form-data">
                       <input type="submit" class="btn btn-primary" value="Редактировать">
                     </form>

@@ -30,6 +30,9 @@ class Specialty(models.Model):
     def __str__(self):
         return self.title
 
+    def get_vacancies(self):
+        return self.speciality.all()
+
 
 class Status_Vacancy(models.Model):
     code = models.CharField(max_length=128)
@@ -81,7 +84,7 @@ class Status_Osa(models.Model):
 
 class Osa(models.Model):
     sait = models.CharField(max_length=128)
-    code = models.CharField(max_length=128)
+    code = models.CharField(max_length=128, unique=True)
     deadline = models.IntegerField(default=24)
     status = models.ForeignKey(Status_Osa, on_delete=models.CASCADE, related_name="status_osa")
 
@@ -187,6 +190,9 @@ class Anketa_Result(models.Model):
     def get_absolute_url(self):
         fl = self.application.vacancy.get_quizes()
         return "/anketa/%p/questions/%i" % self.id % fl.values_list('id').first()
+
+    def get_answers(self):
+        return self.anketa_result_result_answer.all()
 
 
 class Result_answer(models.Model):

@@ -51,20 +51,8 @@
         <aside class="pt-3 pb-4 px-4 mb-5 card">
           <h1 class="h4 pt-2 pb-2">Компания {{object.company.name}}</h1>
           <div class="nav flex-column nav-pills">
-            <a class="nav-link" href="{% url 'update-company' object.company.id %}">1. Информация о компании</a>
-            <a class="nav-link active" href="#">2. Текущая вакансия</a>
-            {% if object.get_quizes.first %}
-              <a class="nav-link" href="{% url 'update-quiz' object.get_quizes.first.id %}">3. Анкета вакансии</a>
-            {% else %}
-              <a class="nav-link" href="{% url 'create-quiz' %}">3. Анкета вакансии</a>
-            {% endif %}
-            {% if object.get_tests.first %}
-              <a class="nav-link" href="{% url 'update-test' object.get_tests.first.id %}">4. Задание вакансии</a>
-            {% else %}
-              <a class="nav-link" href="{% url 'create-test' %}">4. Задание вакансии</a>
-            {% endif %}
-            <a class="nav-link" href="{% url 'applications-vacancy' object.id %}">5. Отклики вакансии</a>
-            <a class="nav-link" href="{% url 'vacancies-company' object.company.id %}">6. Вакансии компании</a>
+            <a class="nav-link" href="{% url 'update-vacancy' object.vacancy.id %}">1. Информация о вакансии</a>
+            <a class="nav-link active" href="#">2. Задание вакансии</a>
           </div>
         </aside>
       </div>
@@ -74,87 +62,52 @@
             <!-- Tab -->
             <section>
               <h2 class="h4 pt-2 pb-3">{{object.title}}</h2>
-              <form action="{% url 'update-vacancy' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+              <form action="{% url 'update-test' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
               {% csrf_token %}
                 <div class="row">
                   <div class="col-12 col-md-6">
                     <div class="form-group pb-2">
-                      <label class="mb-2 text-dark" for="title">Название вакансии</label>
+                      <label class="mb-2 text-dark" for="title">Название анкеты</label>
                       <input class="form-control" type="text" value="{{object.title}}" id="title" name="title">
                     </div>
                   </div>
                   <div class="col-12 col-md-6">
                     <div class="form-group pb-2">
-                      <label class="mb-2 text-dark" for="speciality">Специализация</label>
-                      <select name="speciality" class="custom-select mr-sm-2" id="speciality">
-                        <option value="{{object.speciality.id}}" selected>{{object.speciality.title}}</option>
-                        {% for sp in speciality_list %}
-                          {% if sp.title != object.speciality.title %}
-                          <option value="{{sp.id}}">{{sp.title}}</option>
-                          {% endif %}
-                        {% endfor %}
-                      </select>
+                      <label class="mb-2 text-dark" for="deadline">Дедлайн анкеты (ч)</label>
+                      <input class="form-control" type="text" value="{{object.deadline}}" id="deadline" name="deadline">
                     </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-12 col-md-6">
                     <div class="form-group pb-2">
-                      <label class="mb-2 text-dark" for="salary_min">Зарплата от</label>
-                      <input class="form-control" type="text" value="{{object.salary_min}}" id="salary_min" name="salary_min">
+                      <label class="mb-2 text-dark" for="description">Ссылка на задание</label>
+                      <input class="form-control" type="text" value="{{object.description}}" id="description" name="description">
                     </div>
                   </div>
                   <div class="col-12 col-md-6">
                     <div class="form-group pb-2">
-                      <label class="mb-2" for="salary_max">Зарплата до</label>
-                      <input class="form-control" type="text" value="{{object.salary_max}}" id="salary_max" name="salary_max">
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12 col-md-6">
-                    <div class="form-group pb-2">
-                      <label class="mb-2 text-dark" for="status">Статус</label>
-                      <select name="status" class="custom-select mr-sm-2" id="status">
-                        <option value="{{object.status.id}}" selected>{{object.status.title}}</option>
-                        {% for st in status_list %}
-                          {% if st.title != object.status.title %}
-                          <option value="{{st.id}}">{{st.title}}</option>
-                          {% endif %}
-                        {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <div class="form-group pb-2">
-                      <label class="mb-2 text-dark" for="company">Компания</label>
-                      <select name="company" class="custom-select mr-sm-2" id="company">
-                        <option value="{{object.company.id}}" selected>{{object.company.name}}</option>
-                        {% for com in company_list %}
-                          {% if com.name != object.company.name %}
-                          <option value="{{com.id}}">{{com.name}}</option>
+                      <label class="mb-2 text-dark" for="vacancy">Вакансия</label>
+                      <select name="vacancy" class="custom-select mr-sm-2" id="vacancy">
+                        <option value="{{object.vacancy.id}}" selected>{{object.vacancy.title}}</option>
+                        {% for vac in vacancy_list %}
+                          {% if vac.title != object.vacancy.title %}
+                          <option value="{{vac.id}}">{{vac.title}}</option>
                           {% endif %}
                         {% endfor %}
                       </select>
                     </div>
                   </div>
                 </div>
-                <div class="form-group pb-2">
-                  <label class="mb-2 text-dark" for="description">Описание вакансии</label>
-                  <textarea name="description" class="form-control" rows="40" id="description" style="color:#000;">{{object.description}}</textarea>
-                </div>
-                    <a href="{% url 'update-vacancy' object.id %}">
+                    <a href="{% url 'update-test' object.id %}">
                       <input type="submit" class="btn btn-primary" value="Сохранить">
                     </a>
               </form>
-              <form action="{% url 'delete-vacancy' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+              <form action="{% url 'delete-test' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
               {% csrf_token %}
-              <a href="{% url 'delete-vacancy' object.id %}">
-                <input type="submit" class="btn btn-danger" value="Удалить вакансию">
+              <a href="{% url 'delete-test' object.id %}">
+                <input type="submit" class="btn btn-danger" value="Удалить задание">
               </a>
-              </form>
-              <form action="{% url 'create-vacancy' %}" class="mt-2 mb-3" enctype="multipart/form-data">
-                <input type="submit" class="btn btn-success" value="Создать новую">
               </form>
               <!-- END Vacancy info -->
             </section>

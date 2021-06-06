@@ -44,64 +44,48 @@
       </div>
     </nav>
   </header>
-  {% load static %}
-  {% load is_already_answered %}
   <main class="container mt-3">
     <section>
       <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{title}}</strong></h1>
-      <p class="text-center pt-1">Всего вопросов: {{questions_list.count}}</p>
+      <p class="text-center pt-1">Всего ответов: {{answers_list.count}}</p>
 
-          <div id="countdown-box" type="hidden" class="text-center pt-1">
-              <div class="spinner-border" role="status"></div>
-          </div>
       <div class="row mt-5">
-          {% block scripts %}
-            <script src="{% static 'main.js' %}" defer></script>
-          {% endblock scripts %}
-          {% for obj in questions %}
-          <div id="date-box" type="hidden" cl="{{deadline}}"></div>
-          <div id="date-start" type="hidden" cl="{{start|date:'U'}}"></div>
+          {% for obj in answers %}
         <div class="col-12 col-lg-8 offset-lg-2 m-auto">
           <div class="card mb-4">
             <div class="card-body px-4">
               <div class="row">
                 <div class="col-12 col-md-8 col-lg-9">
-                        <h6 class="h6 pb-2">{{obj.num}}) {{obj.text_question}}</h6>
-                        {% is_already_answered obj.id id as is_answered %}
-                            {% if is_answered %}
-                                {% if obj.num != qw_kol %}
-                                    <p>Ваш ответ успешно сохранен! Перейдите к следующей странице, чтобы завершить анкету</p>
-                                    <a href="?page={{obj.num|add:1}}">
-                                        <input type="submit" class="btn btn-primary mt-4 mb-2" value="Следующий вопрос">
+                        <h6 class="h6 pb-2">{{obj.question.num}}) {{obj.question.text_question}}</h6>
+                            {% if obj.weight != 0 %}
+                                {% if obj.question.num != answ_kol %}
+                                    <p>Ваша оценка успешно сохранена! Перейдите к следующей странице, чтобы завершить проверку</p>
+                                    <a href="{% url 'marks' obj.anketa_result.id obj.pk|add:1 %}?page={{obj.question.num|add:1}}">
+                                        <input type="submit" class="btn btn-primary mt-4 mb-2" value="Следующий ответ">
                                     </a>
                                 {% else %}
-                                    <p>Ваш ответ успешно сохранен! Перейдите к следующей странице, чтобы завершить анкету</p>
-                                    <form action="{% url 'application_anketa_update' id_app %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                            <input type="hidden" name="status" value="2">
-                                            <a href="{% url 'application_anketa_update' id_app %}">
-                                                <input type="submit" class="btn btn-primary mt-4 mb-2" value="Завершить анкету">
+                                    <p>Ваша оценка успешно сохранена! Перейдите к следующей странице, чтобы завершить проверку</p>
+                                            <input type="hidden" name="status" value="3">
+                                            <a href="{% url 'type-result' obj.anketa_result.id obj.anketa_result.application.id %}">
+                                                <input type="submit" class="btn btn-primary mt-4 mb-2" value="Завершить проверку">
                                             </a>
-                                    </form>
                                 {% endif %}
                             {% else %}
-                                <form autocomplete="off" action="{% url 'answer' id=id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+                            <textarea rows="5" cols="30" readonly>{{obj.text_result}}</textarea>
+                                <form autocomplete="off" action="{% url 'update-answer' obj.pk %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                        {% if obj.is_close %}
-                                            {% for answer in obj.get_answers %}
-                                                <label for="text_result"><input for="text_result" type="radio" name="text_result" value="{{ answer.text_answer }}">{{ answer.text_answer }}</label><br>
-                                                <input type="hidden" name="question" value="{{ obj.id }}">
-                                                <input type="hidden" name="anketa_result" value="{{ id }}">
-                                            {% endfor %}
-                                        {% else %}
-
-                                                <input for="text_result" id="text_result" type="text" name="text_result" ><br>
-                                                <input type="hidden" name="question" value="{{ obj.id }}">
-                                                <input type="hidden" name="anketa_result" value="{{ id }}">
-                                        {% endif %}
-                                        <a href="{% url 'answer' id=id %}">
-                                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Отправить на проверку">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <input type="text" size="32" name="weight" placeholder="1-Чемпион, 2-Деятель, 3-Ждун">
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                        <a href="{% url 'update-answer' obj.pk %}">
+                                            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Оценить">
                                         </a>
+                                        </div>
+                                    </div>
                                 </form>
                             {% endif %}
 

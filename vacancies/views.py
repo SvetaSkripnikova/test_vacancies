@@ -1,7 +1,7 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponseRedirect, request
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -284,3 +284,30 @@ class UpdateApplicationOsaView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('applications')
+
+
+class SearchResultsView(ListView):
+    model = Vacancy
+    template_name = 'index.html'
+
+    def get_queryset(self):  # новый
+        query = self.request.GET.get('q')
+        object_list = Vacancy.objects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+        return reverse_lazy('search-result')
+
+
+class ListVacanciesSearchResultView(ListView):
+    model = Vacancy
+
+    def get_context_data(self, **kwargs):
+        context = super(ListVacanciesSearchResultView, self).get_context_data(**kwargs)
+        context["title"] = "Вакансии, соответствующие поиску:"
+        query = self.request.GET.get('q')
+        context["object_list"] = Vacancy.objects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+        context["company_list"] = Company.objects.all()
+        context["speciality_list"] = Specialty.objects.all()
+        return context

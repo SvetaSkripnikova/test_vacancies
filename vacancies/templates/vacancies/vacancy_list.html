@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
-  <header class="container mt-3">
+    <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand mr-4 font-weight-bold" href="{% url 'home' %}">Digital Group</a>
+      <a class="navbar-brand mr-4" href="{% url 'home' %}">Digital Group</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -22,24 +22,34 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'applications' %}">Мои отклики</a>
           </li>
+
         </ul>
+        {% if request.user.is_authenticated %}
         <ul class="navbar-nav col-2 justify-content-end">
+                <button type="button" class="btn dropdown-toggle font-weight-bold" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ request.user.first_name }}
+                </button>
+                  <div class="dropdown-menu dropdown-menu-right mt-3">
+                    <a href="{% url 'vacancies-hr' %}" class="dropdown-item py-2">Вакансии</a>
+                    <a href="{% url 'companies-hr' %}" class="dropdown-item py-2">Компании</a>
+                    <a href="{% url 'applications-hr-all' %}" class="dropdown-item py-2">Отклики</a>
+                    <a href="{% url 'OSA-hr' %}" class="dropdown-item py-2">База ОСА</a>
+                  </div>
           <li class="nav-item active">
-            {% if request.user.is_authenticated %}
             <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
-            <a href="#" class="nav-link font-weight-bold">{{ request.user.first_name }}</a>
-            {% endif %}
           </li>
+            {% endif %}
         </ul>
       </div>
     </nav>
   </header>
   <main class="container mt-3">
     <section>
-      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>{{title}}</strong></h1>
+      <h1 class="h1 text-center mx-auto mt-4 pt-5">{{title}}</h1>
       <p class="text-center pt-1">вакансий: {{object_list.count}}</p>
       <div class="row mt-5">
           {% for obj in object_list %}
+            {% if obj.status.id == 2 %}
         <div class="col-12 col-lg-8 offset-lg-2 m-auto">
           <div class="card mb-4">
             <div class="card-body px-4">
@@ -55,12 +65,12 @@
                   </a>
                     {% endif %}
                     {% endfor %}
-                  <p>От {{ obj.salary_min }} до {{ obj.salary_max }} руб.</p>
+                  <p class="text-secondary">От {{ obj.salary_min }} до {{ obj.salary_max }} руб.</p>
                 </div>
                 <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
                     {% for com in company_list %}
                     {% if com.id == obj.company_id %}
-                  <a href="{% url 'company_detail' pk=com.id %}"><img src="{{com.logo}}" width="150" height="80" alt=""></a>
+                  <a href="{% url 'company_detail' pk=com.id %}"><img src="{{com.logo}}" width="160" height="70" alt=""></a>
                     {% endif %}
                     {% endfor %}
                 </div>
@@ -68,6 +78,68 @@
             </div>
           </div>
         </div>
+              {% elif obj.status.id == 1 %}
+        <div class="col-12 col-lg-8 offset-lg-2 m-auto">
+          <div class="card border-info mb-4">
+            <div class="card-body text-info px-4">
+              <div class="row">
+                <div class="col-12 col-md-8 col-lg-9">
+                  <a href="">
+                    <h2 class="h2 pb-2">{{obj.title}}</h2>
+                  </a>
+                  <p>Вакансия скоро станет доступна, ожидайте</p>
+                    {% for sp in speciality_list %}
+                    {% if sp.id == obj.speciality_id %}
+                  <a href="{% url 'categories' code=sp.code %}">
+                  <p class="h5 mb-2">{{ sp.title }}</p>
+                  </a>
+                    {% endif %}
+                    {% endfor %}
+                  <p class="text-secondary">От {{ obj.salary_min }} до {{ obj.salary_max }} руб.</p>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
+                    {% for com in company_list %}
+                    {% if com.id == obj.company_id %}
+                  <a href="{% url 'company_detail' pk=com.id %}"><img src="{{com.logo}}" width="160" height="70" alt=""></a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          {% elif obj.status.id == 3 %}
+        <div class="col-12 col-lg-8 offset-lg-2 m-auto">
+          <div class="card mb-4">
+            <div class="card-body px-4 text-success">
+              <div class="row">
+                <div class="col-12 col-md-8 col-lg-9">
+                  <a href="">
+                    <h2 class="h2 pb-2">{{obj.title}}</h2>
+                  </a>
+                  <p>Вакансия закрыта, сотрудник найден</p>
+                    {% for sp in speciality_list %}
+                    {% if sp.id == obj.speciality_id %}
+                  <a href="{% url 'categories' code=sp.code %}">
+                  <p class="h5 mb-2">{{ sp.title }}</p>
+                  </a>
+                    {% endif %}
+                    {% endfor %}
+                  <p class="text-secondary">От {{ obj.salary_min }} до {{ obj.salary_max }} руб.</p>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
+                    {% for com in company_list %}
+                    {% if com.id == obj.company_id %}
+                  <a href="{% url 'company_detail' pk=com.id %}"><img src="{{com.logo}}" width="160" height="70" alt=""></a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          {% endif %}
           {% endfor %}
       </div>
     </section>

@@ -14,9 +14,9 @@
 {% load is_deadline_test %}
 {% load is_deadline_osa %}
 <body>
-  <header class="container mt-3">
+    <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand mr-4 font-weight-bold" href="{% url 'home' %}">Digital Group</a>
+      <a class="navbar-brand mr-4" href="{% url 'home' %}">Digital Group</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -28,14 +28,23 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'applications' %}">Мои отклики</a>
           </li>
+
         </ul>
+        {% if request.user.is_authenticated %}
         <ul class="navbar-nav col-2 justify-content-end">
+                <button type="button" class="btn dropdown-toggle font-weight-bold" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ request.user.first_name }}
+                </button>
+                  <div class="dropdown-menu dropdown-menu-right mt-3">
+                    <a href="{% url 'vacancies-hr' %}" class="dropdown-item py-2">Вакансии</a>
+                    <a href="{% url 'companies-hr' %}" class="dropdown-item py-2">Компании</a>
+                    <a href="{% url 'applications-hr-all' %}" class="dropdown-item py-2">Отклики</a>
+                    <a href="{% url 'OSA-hr' %}" class="dropdown-item py-2">База ОСА</a>
+                  </div>
           <li class="nav-item active">
-            {% if request.user.is_authenticated %}
             <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
-            <a href="#" class="nav-link font-weight-bold">{{ request.user.first_name }}</a>
-            {% endif %}
           </li>
+            {% endif %}
         </ul>
       </div>
     </nav>
@@ -81,37 +90,51 @@
                     <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: 75%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">75%</div>
                   </div>
                   {% else %}
-                    {% if obj.status.id == 1 %}
+                    {% if obj.vacancy.status.id == 2 %}
+                        {% if obj.status.id == 1 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 25%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">25%</div>
+                          </div>
+                        {% elif obj.status.id == 2 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 25%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">25%</div>
+                          </div>
+                        {% elif obj.status.id == 3 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">50%</div>
+                          </div>
+                        {% elif obj.status.id == 4 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 50%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">50%</div>
+                          </div>
+                        {% elif obj.status.id == 5 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">75%</div>
+                          </div>
+                        {% elif obj.status.id == 6 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 75%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">75%</div>
+                          </div>
+                        {% elif obj.status.id == 7 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">100%</div>
+                          </div>
+                        {% elif obj.status.id == 8 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">100%</div>
+                          </div>
+                        {% elif obj.status.id == 9 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">100%</div>
+                          </div>
+                        {% elif obj.status.id == 10 %}
+                          <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">отказ</div>
+                          </div>
+                        {% endif %}
+                    {% elif obj.vacancy.status.id == 3 %}
                       <div class="progress mb-2">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 25%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">25%</div>
-                      </div>
-                    {% elif obj.status.id == 2 %}
-                      <div class="progress mb-2">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 25%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">25%</div>
-                      </div>
-                    {% elif obj.status.id == 3 %}
-                      <div class="progress mb-2">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">50%</div>
-                      </div>
-                    {% elif obj.status.id == 4 %}
-                      <div class="progress mb-2">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 50%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">50%</div>
-                      </div>
-                    {% elif obj.status.id == 5 %}
-                      <div class="progress mb-2">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">75%</div>
-                      </div>
-                    {% elif obj.status.id == 6 %}
-                      <div class="progress mb-2">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 75%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">75%</div>
-                      </div>
-                    {% elif obj.status.id == 7 %}
-                      <div class="progress mb-2">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">100%</div>
-                      </div>
-                    {% elif obj.status.id == 8 %}
-                      <div class="progress mb-2">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">100%</div>
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">вакансия закрыта</div>
                       </div>
                     {% endif %}
                   {% endif %}
@@ -126,30 +149,55 @@
                     Дедлайн просрочен
                   </button>
                 {% else %}
-                  {% if obj.status.id == 1 %}
-                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizStartModal-{{obj.id}}">
-                    {{obj.status.title}}
+                  {% if obj.vacancy.status.id == 2 %}
+                      {% if obj.status.id == 1 %}
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizStartModal-{{obj.id}}">
+                        {{obj.status.title}}
+                      </button>
+                      {% elif obj.status.id == 2 %}
+                      <button type="button" class="btn btn-success" >
+                        Ваша анкета на проверке
+                      </button>
+                      {% elif obj.status.id == 3 %}
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizTestModal-{{obj.id}}">
+                        Выполните тестовое задание
+                      </button>
+                      {% elif obj.status.id == 4 %}
+                      <button type="button" class="btn btn-success" >
+                        Ваше задание на проверке
+                      </button>
+                      {% elif obj.status.id == 5 %}
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizOsaModal-{{obj.id}}">
+                        Пройдите тест-оса
+                      </button>
+                      {% elif obj.status.id == 6 %}
+                      <button type="button" class="btn btn-success" >
+                        Ваш тест на проверке
+                      </button>
+                      {% elif obj.status.id == 7 %}
+                      <button type="button" class="btn btn-primary">
+                        Ожидайте звонка HR
+                      </button>
+                      {% elif obj.status.id == 8 %}
+                      <button type="button" class="btn btn-success">
+                        Ожидайте результата собеседования
+                      </button>
+                      {% elif obj.status.id == 9 %}
+                      <button type="button" class="btn btn-success">
+                        Поздравляем, вы вышли на стажировку!
+                      </button>
+                      </a>
+                      {% elif obj.status.id == 10 %}
+                      <button type="button" class="btn btn-secondary">
+                        К сожалению, в результате проверки - отказ по вакансии
+                      </button>
+                      </a>
+                      {% endif %}
+                  {% elif obj.vacancy.status.id == 3 %}
+                  <button type="button" class="btn btn-secondary">
+                    Вакансия закрыта
                   </button>
-                  {% elif obj.status.id == 2 %}
-                  <button type="button" class="btn btn-success" >
-                    Ваша анкета на проверке
-                  </button>
-                  {% elif obj.status.id == 3 %}
-                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizTestModal-{{obj.id}}">
-                    Выполните тестовое задание
-                  </button>
-                  {% elif obj.status.id == 4 %}
-                  <button type="button" class="btn btn-success" >
-                    Ваше задание на проверке
-                  </button>
-                  {% elif obj.status.id == 5 %}
-                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quizOsaModal-{{obj.id}}">
-                    Пройдите тест-оса
-                  </button>
-                  {% elif obj.status.id == 6 %}
-                  <button type="button" class="btn btn-success" >
-                    Ваш тест на проверке
-                  </button>
+                  </a>
                   {% endif %}
                 {% endif %}
                 </div>

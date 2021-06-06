@@ -8,15 +8,15 @@ from accounts.models import User
 class ApplyVacancyForm(forms.ModelForm):
     class Meta:
         model = Application
-        fields = ("vacancy", "kandidat", "status")
+        fields = ("vacancy", "kandidat", "status", "osa",)
 
     @transaction.atomic
     def save(self):
         new_apply = super().save()
         new_apply.kandidat = self.cleaned_data["kandidat"]
-        #User.objects.filter(user_id=self.request.user.id)["user_id"]
         new_apply.status = self.cleaned_data["status"]
         new_apply.vacancy = self.cleaned_data["vacancy"]
+        new_apply.osa = self.cleaned_data["osa"]
         new_apply.save()
         return new_apply
 
@@ -91,3 +91,9 @@ class UpdateOsaForm(forms.ModelForm):
     class Meta:
         model = Result_osa
         fields = ("code",)
+
+
+class UpdateSobesForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ("status",)

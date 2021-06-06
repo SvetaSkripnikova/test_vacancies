@@ -6,6 +6,8 @@
   <title>Digital Group</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
 </head>
 
 <body>
@@ -47,21 +49,147 @@
 
   <main class="container mt-3 pb-5">
     <div class="row mt-5">
-      <div class="col-12 col-lg-4">
-        <aside class="pt-3 pb-4 px-4 mb-5 card">
-          <h1 class="h4 pt-2 pb-2">Вакансия {{object.title}}</h1>
-          <div class="nav flex-column nav-pills">
-            <a class="nav-link" href="{% url 'update-vacancy' object.id %}">1. Информация о вакансии</a>
-            <a class="nav-link active" href="{% url 'applications-vacancy' object.id %}">2. Отклики вакансии</a>
-          </div>
-        </aside>
-      </div>
-
-      <div class="col-12 col-lg-8">
+      <div class="col-12 col-lg-12">
         <div class="card">
           <div class="card-body px-4 pb-4">
             <section class="tab-pane fade show active">
               <h2 class="h4 pt-2 pb-3">Всего откликов: {{apps_all.count}}</h2>
+              <!-- go anketa -->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-12 col-lg-12">
+
+                      <table class="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Вакансия</th>
+                            <th scope="col">Отклики на вакансию</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for vac in al_anket %}
+                          <tr>
+                            <th scope="row">{{vac}}</th>
+                            <td>{{vac.applications_Count}}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col-12 col-lg-12">
+        <div class="card">
+          <div class="card-body px-4 pb-4">
+            <section class="tab-pane fade show active">
+              <h2 class="h4 pt-2 pb-3">Общий срез по этапам</h2>
+              <!-- go anketa -->
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-12 col-lg-12">
+
+                      <table class="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Этап</th>
+                            <th scope="col">Отклики</th>
+                            <th scope="col">Процент</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">Проходят анкету</th>
+                            <td>{{check_anket}}</td>
+                            <td>{{count_go_anket}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Ожидают проверки анкеты</th>
+                            <td>{{apps_anket.count}}</td>
+                            <td>{{count_wait_anket}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Пропустили дедлайн анкетирования</th>
+                            <td>{{fail_anket}}</td>
+                            <td>{{count_fail_anket}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Проходят тестовое задание</th>
+                            <td>{{check_test}}</td>
+                            <td>{{count_go_test}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Ожидают проверки задания</th>
+                            <td>{{apps_test.count}}</td>
+                            <td>{{count_wait_test}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Пропустили дедлайн задания</th>
+                            <td>{{fail_test}}</td>
+                            <td>{{count_fail_test}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Проходят ОСА-тест</th>
+                            <td>{{check_osa}}</td>
+                            <td>{{count_go_osa}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Ожидают проверки ОСА-теста</th>
+                            <td>{{apps_osa.count}}</td>
+                            <td>{{count_wait_osa}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Пропустили дедлайн ОСА-теста</th>
+                            <td>{{fail_osa}}</td>
+                            <td>{{count_fail_osa}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Ожидают согласования собеседования</th>
+                            <td>{{apps_check_sobes.count}}</td>
+                            <td>{{count_check_sobes}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Проходят собеседование</th>
+                            <td>{{apps_go_sobes.count}}</td>
+                            <td>{{count_go_sobes}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Отказ по вакансии</th>
+                            <td>{{apps_fail.count}}</td>
+                            <td>{{count_fail}}%</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">На стажировке</th>
+                            <td>{{apps_win.count}}</td>
+                            <td>{{count_win}}%</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  <section class="hidden">
+    <div class="row mt-5">
+      <div class="col-12 col-lg-12">
+        <div class="card">
+          <div class="card-body px-4 pb-4">
+            <section class="tab-pane fade show active">
+              <h2 class="h4 pt-2 pb-3">Общий срез по этапам</h2>
               <!-- go anketa -->
               <div class="card mt-3">
                 <div class="card-body px-4">
@@ -92,11 +220,6 @@
                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary w-{{progress_count_wait_anket}}" role="progressbar" aria-valuenow="{{progress_count_wait_anket}}" aria-valuemin="0" aria-valuemax="100">{{count_wait_anket}}%</div>
                       </div>
                     </div>
-                    {% if apps_anket.count != 0 %}
-                    <div class="col-6 col-lg-4 text-right">
-                      <a href="{% url 'applications-anketa' object.id %}" class="btn btn-outline-primary">К проверке</a>
-                    </div>
-                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -148,11 +271,6 @@
                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary w-{{progress_count_wait_test}}" role="progressbar" aria-valuenow="{{progress_count_wait_test}}" aria-valuemin="0" aria-valuemax="100">{{count_wait_test}}%</div>
                       </div>
                     </div>
-                    {% if apps_test.count != 0 %}
-                    <div class="col-6 col-lg-4 text-right">
-                      <a href="{% url 'applications-test' object.id %}" class="btn btn-outline-primary">К проверке</a>
-                    </div>
-                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -204,11 +322,6 @@
                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary w-{{progress_count_wait_osa}}" role="progressbar" aria-valuenow="{{progress_count_wait_osa}}" aria-valuemin="0" aria-valuemax="100">{{count_wait_osa}}%</div>
                       </div>
                     </div>
-                    {% if apps_osa.count != 0 %}
-                    <div class="col-6 col-lg-4 text-right">
-                      <a href="{% url 'applications-osa' object.id %}" class="btn btn-outline-primary">К проверке</a>
-                    </div>
-                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -243,11 +356,6 @@
                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary w-{{progress_count_check_sobes}}" role="progressbar" aria-valuenow="{{progress_count_check_sobes}}" aria-valuemin="0" aria-valuemax="100">{{count_check_sobes}}%</div>
                       </div>
                     </div>
-                    {% if apps_check_sobes.count != 0 %}
-                    <div class="col-6 col-lg-4 text-right">
-                      <a href="{% url 'applications-sobes' object.id %}" class="btn btn-outline-primary">К проверке</a>
-                    </div>
-                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -265,11 +373,6 @@
                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary w-{{progress_count_go_sobes}}" role="progressbar" aria-valuenow="{{progress_count_go_sobes}}" aria-valuemin="0" aria-valuemax="100">{{count_go_sobes}}%</div>
                       </div>
                     </div>
-                    {% if apps_go_sobes.count != 0 %}
-                    <div class="col-6 col-lg-4 text-right">
-                      <a href="{% url 'applications-result-sobes' object.id %}" class="btn btn-outline-primary">Определить результат</a>
-                    </div>
-                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -313,6 +416,7 @@
         </div>
       </div>
     </div>
+  </section>
   </main>
 
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
 
 <head>
   <meta charset="UTF-8">
-  <title>Вакансия | Digital Group</title>
+  <title>Digital Group</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
-{% load is_already_applied %}
-{% load is_limit_app %}
+
 <body>
     <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -48,58 +47,46 @@
 
   <main class="container mt-3 pb-5">
     <div class="row mt-5">
-      <div class="col-12 col-lg-2">
-        <div class="pl-3 mb-5">
-        </div>
+      <div class="col-12 col-lg-4">
+        <aside class="pt-3 pb-4 px-4 mb-5 card">
+          <h1 class="h4 pt-2 pb-2">Вакансия {{object.title}}</h1>
+          <div class="nav flex-column nav-pills">
+            <a class="nav-link" href="{% url 'update-vacancy' vacancy.id %}">1. Информация о вакансии</a>
+            <a class="nav-link" href="{% url 'applications-vacancy' vacancy.id %}">2. Отклики вакансии</a>
+            <a class="nav-link active" href="{% url 'applications-anketa' vacancy.id %}">3. Ответы на анкету</a>
+          </div>
+        </aside>
       </div>
+
       <div class="col-12 col-lg-8">
-        <section class="pl-3">
-            {% for com in company_list %}
-            {% if com.id == object.company_id %}
-          <a href="{% url 'company_detail' pk=com.id %}">
-              <img src="{{com.logo}}" width="150" height="80" alt="">
-          </a>
-            {% endif %}
-            {% endfor %}
-          <div class="d-flex align-items-baseline align-content-baseline">
-            <h1 class="h2 mt-4 font-weight-bold" >{{object.title}}</h1>
-            <p class="m-0 pl-3">{{ object.salary_min }} – {{ object.salary_max }} руб/мес</p>
+        <div class="card">
+          <div class="card-body px-4 pb-4">
+            <section class="tab-pane fade show active">
+              <h2 class="h4 pt-2 pb-3">Всего заданий к проверке: {{anketa_results.count}}</h2>
+              {% for obj in test_results %}
+              <div class="card mt-3">
+                <div class="card-body px-4">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-lg-8">
+                      <a class="h5" href="">{{obj.application.kandidat.pk}}</a>
+                    </div>
+                    <div class="col-6 col-lg-4 text-right">
+                      <a href="{% url 'test-result' obj.id obj.application.pk %}" class="btn btn-outline-primary">К проверке</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </section>
           </div>
-          {% for sp in speciality_list %}
-            {% if sp.id == object.speciality_id %}
-          <a href="{% url 'categories' code=sp.code %}">
-          <p class="h5 mt-2">{{sp.title}}</p>
-          </a>
-            {% endif %}
-          {% endfor %}
-          {% is_already_applied object request.user.id as is_applied %}
-          {%  is_limit_app request.user.id as is_limit %}
-          {% if is_limit %}
-            <input type="submit" class="btn btn-primary mt-4 mb-2" value="Вы достигли лимита откликов 3/3"/>
-          {% else %}
-            {% if is_applied %}
-              <input type="submit" class="btn btn-primary mt-4 mb-2" value="Вы уже оставили отклик"/>
-            {% else %}
-              <form action="{% url 'apply-vacancy' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
-                {% csrf_token %}
-                  <input type="hidden" name="kandidat" value="{{ user.id }}">
-                  <input type="hidden" name="status" value="1">
-                  <input type="hidden" name="vacancy" value="{{ object.id }}">
-                  <input type="hidden" name="osa" value="0">
-                  <input type="submit" class="btn btn-primary mt-4 mb-2" value="Оставить отклик">
-              </form>
-            {% endif %}
-          {% endif %}
-          <p class="text-muted mb-4"></p>
-          <div style="line-height: 1.8;">
-              {{object.description|safe}}
-          </div>
-        </section>
+        </div>
       </div>
     </div>
   </main>
+
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>
+

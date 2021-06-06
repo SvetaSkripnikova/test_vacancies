@@ -49,10 +49,10 @@
     <div class="row mt-5">
       <div class="col-12 col-lg-4">
         <aside class="pt-3 pb-4 px-4 mb-5 card">
-          <h1 class="h4 pt-2 pb-2">Компания</h1>
+          <h1 class="h4 pt-2 pb-2">Компания {{object.company.name}}</h1>
           <div class="nav flex-column nav-pills">
-            <a class="nav-link" href="{% url 'companies-hr' %}">1. Все компании</a>
-            <a class="nav-link" href="{% url 'vacancies-hr' %}">2. Все вакансии</a>
+            <a class="nav-link" href="{% url 'update-vacancy' object.vacancy.id %}">1. Информация о вакансии</a>
+            <a class="nav-link active" href="#">2. Анкета вакансии</a>
           </div>
         </aside>
       </div>
@@ -62,38 +62,51 @@
             <!-- Tab -->
             <section>
               <h2 class="h4 pt-2 pb-3">{{object.title}}</h2>
-              <form action="{% url 'create-company' %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+              <form action="{% url 'update-quiz' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
               {% csrf_token %}
                 <div class="row">
                   <div class="col-12 col-md-6">
                     <div class="form-group pb-2">
-                      <label class="mb-2 text-dark" for="name">Наименование компании</label>
-                      <input class="form-control" type="text" id="name" name="name">
+                      <label class="mb-2 text-dark" for="title">Название анкеты</label>
+                      <input class="form-control" type="text" value="{{object.title}}" id="title" name="title">
                     </div>
                   </div>
                   <div class="col-12 col-md-6">
                     <div class="form-group pb-2">
-                      <label class="mb-2 text-dark" for="location">Город</label>
-                      <input class="form-control" type="text" id="location" name="location">
+                      <label class="mb-2 text-dark" for="deadline">Дедлайн анкеты (ч)</label>
+                      <input class="form-control" type="text" value="{{object.deadline}}" id="deadline" name="deadline">
                     </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-12 col-md-6">
                     <div class="form-group pb-2">
-                      <label class="mb-2 text-dark" for="logo">Ссылка на логотип</label>
-                      <input class="form-control" type="text" id="logo" name="logo">
+                      <label class="mb-2 text-dark" for="vacancy">Вакансия</label>
+                      <select name="vacancy" class="custom-select mr-sm-2" id="vacancy">
+                        <option value="{{object.vacancy.id}}" selected>{{object.vacancy.title}}</option>
+                        {% for vac in vacancy_list %}
+                          {% if vac.title != object.vacancy.title %}
+                          <option value="{{vac.id}}">{{vac.title}}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
                     </div>
                   </div>
                 </div>
-                <div class="form-group pb-2">
-                  <label class="mb-2 text-dark" for="description">Описание вакансии</label>
-                  <textarea name="description" class="form-control" rows="20" id="description" style="color:#000;"></textarea>
-                </div>
-                    <a href="{% url 'create-company' %}">
+                    <a href="{% url 'update-quiz' object.id %}">
                       <input type="submit" class="btn btn-primary" value="Сохранить">
                     </a>
               </form>
+              <form action="{% url 'delete-quiz' object.id %}" method="post" class="mt-2 mb-3" enctype="multipart/form-data">
+              {% csrf_token %}
+              <a href="{% url 'delete-quiz' object.id %}">
+                <input type="submit" class="btn btn-danger" value="Удалить анкету">
+              </a>
+              </form>
+              <form action="" class="mt-2 mb-3" enctype="multipart/form-data">
+                <input type="submit" class="btn btn-success" value="Создать вопрос">
+              </form>
+              <!-- END Vacancy info -->
             </section>
             <!-- END Tab -->
           </div>
