@@ -1,6 +1,5 @@
 from django.urls import path
 
-from accounts import views
 from hrs.views import ListVacanciesHRView, UpdateVacancyView, CreateVacancyView, DeleteVacancyView, UpdateCompanyView, \
     DeleteCompanyView, CreateCompanyView, ListCompaniesHRView, DetailVacanciesCompanyView, \
     DetailApplicationsVacancyView, ResultAnswersListView, ListApplicationsAnketaView, UpdateAnswerView, TypeResultView, \

@@ -1,5 +1,4 @@
 from django import forms
-from django.db import transaction
 
 from vacancies.models import Vacancy, Company, Result_answer, Application, Osa, Quiz, Test
 

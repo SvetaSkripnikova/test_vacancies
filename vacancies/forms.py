@@ -1,8 +1,7 @@
 from django import forms
 from django.db import transaction
 
-from vacancies.models import Application, Question, Result_answer, Anketa_Result, Result_test, Result_osa
-from accounts.models import User
+from vacancies.models import Application, Result_answer, Anketa_Result, Result_test, Result_osa
 
 
 class ApplyVacancyForm(forms.ModelForm):

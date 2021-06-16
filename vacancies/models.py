@@ -1,9 +1,7 @@
 from datetime import datetime, timedelta
-from itertools import count
 
 from django.db import models
 
-# Create your models here.
 from django.utils.timezone import utc
 
 from accounts.models import Kandidat, Hr

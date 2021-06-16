@@ -1,38 +1,11 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView, LogoutView
-from django.forms.utils import ErrorDict, ErrorList
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
-# Create your views here.
-from django.urls import reverse_lazy
+
 from django.views import View
-from django.views.generic import CreateView, FormView
+from django.views.generic import FormView
 
-from accounts.forms import LoginForm, MyLoginForm, UserRegistrationForm
-
-
-# def user_login(request):
-#     if request.method == 'POST':
-#         form = MyLoginForm(request.POST)
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             user = authenticate(username=cd['username'], password=cd['password'])
-#             if user is not None:
-#                 if user.is_active:
-#                     login(request, user)
-#                     return redirect('/')
-#                 else:
-#                     return HttpResponse('Disabled account')
-#             else:
-#                 return HttpResponse('Invalid login')
-#     else:
-#         form = MyLoginForm()
-#     return render(request, 'accounts/login.html', {'form': form})
-
+from accounts.forms import UserRegistrationForm
 
 
 class MyRegisterFormView(FormView):
@@ -57,27 +30,6 @@ class MyRegisterFormView(FormView):
         return super(MyRegisterFormView, self).form_invalid(form)
 
 
-#вход
-# class MyLoginView(LoginView):
-#     form_class = LoginForm
-#     success_url = '/'
-#     redirect_authenticated_user = True
-#     template_name = 'accounts/login.html'
-#
-#     def get_success_url(self):
-#         return self.success_url('login')
-
- # class LogoutView(LogoutView):
- #     template_name = 'registration/logged_out.html'
-    #next_page = reverse_lazy('logged_out')
-
-
-# class LogoutView(View):
-#     @staticmethod
-#     def get(request):
-#         logout(request)
-#         return reverse_lazy("logout")
-
 class LogoutSuccessView(View):
     @staticmethod
     def get(request):
@@ -88,11 +40,8 @@ def register(request):
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         if user_form.is_valid():
-            # Create a new user object but avoid saving it yet
             new_user = user_form.save()
-            # Set the chosen password
             new_user.set_password(user_form.cleaned_data['password'])
-            # Save the User object
             new_user.save()
             return render(request, 'accounts/register_done.html', {'new_user': new_user})
     else:

@@ -406,8 +406,6 @@ class ListAllApplicationsHRView(ListView):
         context["al_anket"] = Vacancy.objects.annotate(
             applications_Count=Count('vacancy_application')).order_by('-applications_Count')
 
-
-
         context["apps_go_anket"] = Application.objects.filter(status__id="1")
         context["apps_go_test"] = Application.objects.filter(status__id="3")
         context["apps_go_osa"] = Application.objects.filter(status__id="5")

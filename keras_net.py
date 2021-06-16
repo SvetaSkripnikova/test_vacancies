@@ -61,14 +61,15 @@ supervised = make_supervised(data_frame)
 encoded_inputs = np.array(encode(supervised["inputs"]))
 encoded_outputs = np.array(encode(supervised["outputs"]))
 
-train_x = encoded_inputs[:25]
-train_y = encoded_outputs[:25]
+train_x = encoded_inputs[:650]
+train_y = encoded_outputs[:650]
 
-test_x = encoded_inputs[25:]
-test_y = encoded_outputs[25:]
+test_x = encoded_inputs[650:]
+test_y = encoded_outputs[650:]
 
 model = k.Sequential()
 model.add(k.layers.Dense(units=16, activation="relu"))
+model.add(k.layers.Dense(units=8, activation="sigmoid"))
 model.add(k.layers.Dense(units=1, activation="sigmoid"))
 model.compile(loss="mse", optimizer="sgd", metrics=["accuracy"])
 fit_results = model.fit(x=train_x, y=train_y, epochs=1000, validation_split=0.2)
@@ -86,8 +87,11 @@ plt.legend()
 plt.show()
 
 predicted_test = model.predict(test_x)
-real_data = data_frame.iloc[25:][input_names+output_names]
+real_data = data_frame.iloc[650:][input_names+output_names]
 real_data["PRes"] = predicted_test
+real_data["PRes final"] = np.round(predicted_test,0)
 print(real_data)
 pred = model.predict([[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]])
 print(pred)
+print(np.round(pred,0))
+print(model.summary())

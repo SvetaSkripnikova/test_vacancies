@@ -1,18 +1,9 @@
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
-from django.http import HttpResponseRedirect, request
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
-# Create your views here.
-#def home(request):
-#    context = {}
-#    template = 'index.html'
-#    return render(request, template, context)
-from django.urls import reverse_lazy, resolve
-from django.utils.decorators import method_decorator
-from django.views import View
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView
 
 from accounts.models import Kandidat
@@ -20,7 +11,7 @@ from vacancies.forms import ApplyVacancyForm, StartAnketResultForm, QuestionsFor
     UpdateApplicationAnketaForm, StartTestResultForm, UpdateApplicationTestForm, UpdateTestForm, StartOsaResultForm, \
     UpdateOsaForm, UpdateApplicationOsaForm
 from vacancies.models import Specialty, Company, Vacancy, Application, Status_Application, Question, Quiz, \
-    Anketa_Result, Result_answer, Status_Anketa, Result_test, Test, Osa, Result_osa
+    Anketa_Result, Result_answer, Result_test, Test, Osa, Result_osa
 
 
 class MainView(LoginRequiredMixin, TemplateView):
@@ -59,10 +50,6 @@ class ApplyVacancyView(CreateView):
     form_class = ApplyVacancyForm
     slug_field = "vacancy_id"
     slug_url_kwarg = "vacancy_id"
-
-    #@method_decorator(login_required(login_url=reverse_lazy("login")))
-    #def dispatch(self, request, *args, **kwargs):
-    #    return super().dispatch(self.request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
